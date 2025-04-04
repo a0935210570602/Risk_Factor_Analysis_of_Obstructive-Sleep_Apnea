@@ -16,3 +16,6 @@ __pycache__/
 # 中間輸出資料
 result_data/
 record/
+
+# 📂 macOS 系統檔
+.DS_Store
