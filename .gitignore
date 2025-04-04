@@ -1,7 +1,18 @@
-ga_env/
-data/
+raw data/
+
+# Python
+second_recurrent_prediction/__pycache__
 __pycache__/
 *.pyc
 *.pyo
-*.ipynb_checkpoints/
-second_recurrent_prediction/__pycache__
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code local settings
+.vscode/
+*.code-workspace
+
+# 中間輸出資料
+result_data/
+record/
