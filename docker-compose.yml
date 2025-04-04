@@ -1,0 +1,10 @@
+version: '2.2'
+
+services:
+  app:
+    build: .
+    image: stroke_analysis:latest  # 👈 加這行
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: python run_experiments.py  # 你也可以改成你要執行的檔名

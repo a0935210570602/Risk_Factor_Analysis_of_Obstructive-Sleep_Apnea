@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 from second_recurrent_prediction import SecondStrokePrediction
+import matplotlib
+matplotlib.rcParams['font.family'] = 'DejaVu Sans'  # 或 'sans-serif'
+matplotlib.rcParams['text.usetex'] = False
 
 normal_filename = 'raw_data/age_below_65_health.csv'
 stroke_filename = 'raw_data/age_below_65_stroke.csv'
