@@ -1,1 +1,7 @@
 ga_env/
+data/
+__pycache__/
+*.pyc
+*.pyo
+*.ipynb_checkpoints/
+second_recurrent_prediction/__pycache__
