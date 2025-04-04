@@ -1,9 +1,0 @@
-,Model name,dataset,accuracy,precision,recall,f1-score,auc
-0,SVM Linear,train,0.6,0.03,0.29,0.06,0.49
-1,SVM Poly,train,0.96,0.0,0.0,0.0,0.87
-2,SVM RBF,train,0.96,0.0,0.0,0.0,0.86
-3,Decision Tree,train,0.96,0.0,0.0,0.0,0.86
-4,Random Forest,train,0.96,0.0,0.0,0.0,1.0
-5,AdaBoost,train,1.0,1.0,1.0,1.0,1.0
-6,Gradient Boost,train,1.0,1.0,1.0,1.0,1.0
-7,XGBoost,train,0.96,1.0,0.18,0.3,0.97
