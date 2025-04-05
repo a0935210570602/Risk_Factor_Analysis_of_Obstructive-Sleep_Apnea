@@ -10,7 +10,7 @@ class ExperimentPipeline:
 
     def data_process(self, data_config):
         processor = DataProcessor(data_config)
-        self.train_X, self.train_Y, self.test_X, self.test_Y = processor.load_data()
+        self.train_X, self.train_Y, self.test_X, self.test_Y, self.feature_list = processor.load_data()
         # 檢查是否需要進行資料平衡處理
         if data_config.get("balance") == "smote":
             self.train_X, self.train_Y = balance_data.smote(self.train_X, self.train_Y)
@@ -75,6 +75,7 @@ class ExperimentPipeline:
                 res["experiment"] = f"exp{exp_num}"
                 res["data_path"] = data_config.get("path")
                 res["balance"] = data_config.get("balance", None)
+                res["features"] = self.feature_list
                 all_results.append(res)
             exp_num += 1
                 
@@ -83,6 +84,7 @@ class ExperimentPipeline:
         # 指定想要的欄位順序，將 'experiment' 放在第一欄
         desired_columns = [
             "experiment",
+            "features",
             "balance",
             "model",
             "state",
