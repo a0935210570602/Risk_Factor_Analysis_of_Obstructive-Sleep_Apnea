@@ -29,27 +29,14 @@ exp_config = [
         },
         "model_config": 
             [
-                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
-                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 2000}, "runs": 3}
-            ]
-    },
-    {
-        "data_config": {
-            "path": age_between_65_80_path,
-            "test_size": 0.2,
-            "random_state": 42
-        },
-        "model_config": 
-            [
-                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 1500}, "runs": 3},
-                {"model_name": "svm_linear", "params": {"C": 0.5, "max_iter": 2000}, "runs": 3}
+                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
             ]
     }
 ]
 
-# 初始化並執行實驗流程控制器
+# 初始化並執行實驗流程控制器kj
 pipeline = ExperimentPipeline(exp_config)
 results = pipeline.run()
 
-# for res in results:
-#     print(res)
+for res in results:
+    print(res)

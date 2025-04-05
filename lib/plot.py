@@ -4,7 +4,7 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 from sklearn import tree
 from sklearn import metrics
-from sklearn.metrics import auc
+from sklearn.metrics import auc, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.metrics import roc_curve
 
 import csv
@@ -19,15 +19,13 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.linear_model import LogisticRegression
 import os
-from sklearn.model_selection import cross_validate
 
-def confusion_matrix(self, true_y, pred_y, name):
-    dir_path = os.path.join(self.PATH, 'confusion_matrix_image')
+def confusion_matrix(cm, name, path):
+    dir_path = os.path.join(path, 'confusion_matrix_image')
     file_path = os.path.join(dir_path, f'{name}.png')
     if not os.path.isdir(dir_path):  # 確認儲存檔案位置 若沒有的話 則新建檔案
         os.makedirs(dir_path)
 
-    cm = metrics.confusion_matrix(true_y, pred_y) #y_true為data真實值  model為預測結果
     plt.matshow(cm, cmap=plt.cm.BuGn) #畫圖
     for i in range(len(cm)):
         for j in range(len(cm)):
@@ -38,15 +36,12 @@ def confusion_matrix(self, true_y, pred_y, name):
     plt.savefig(file_path, bbox_inches='tight') #存檔
     plt.show()
 
-def plot_ROC_curve(self, true_y, pred_y, name):
-    dir_path = os.path.join(self.PATH,'ROC_curve_image')
+def plot_ROC_curve(fpr, tpr, roc_auc, name, path):
+    dir_path = os.path.join(path,'ROC_curve_image')
     file_path = os.path.join(dir_path, f'{name}.png')
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
 
-    fpr, tpr, thersholds = roc_curve(true_y,pred_y)
-
-    roc_auc = auc(fpr,tpr)
     plt.plot(fpr, tpr,color='darkorange', label= 'ROC(area = {0:.2f})'.format(roc_auc),lw=2)
     plt.xlim([-0.05,1.05])
     plt.ylim([-0.05,1.05])
@@ -56,8 +51,6 @@ def plot_ROC_curve(self, true_y, pred_y, name):
     plt.legend(loc = 'lower right')
     plt.savefig(file_path, bbox_inches='tight')
     plt.show()
-
-    return roc_auc,fpr,tpr
 
 def plot_feature_importance_bar_chart(self, importances, file_name, img_title):
     # 获取特征名称

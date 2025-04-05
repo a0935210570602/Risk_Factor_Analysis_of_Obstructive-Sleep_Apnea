@@ -17,10 +17,11 @@ class ExperimentPipeline:
             for run in range(runs):
                 # Build model instance according to configuration
                 model_instance = ModelBuilder.build(config)
-                # Train model
                 model_instance.train(train_X, train_Y)
-                # Evaluate model (e.g., accuracy)
-                evaluation = model_instance.evaluate(test_X, test_Y)
+                model_instance.predict(train_X)
+                evaluation = model_instance.evaluate(train_Y)
+                model_instance.save_result()
+
                 model_results.append({
                     "model": config["model_name"],
                     "run": run + 1,

@@ -27,35 +27,35 @@ class BaseModel(ABC):
         """
         pass
 
-    @abstractmethod
-    def predict(self):
-        """
-        Predict the output (class labels or continuous values) for the given input data.
+    # @abstractmethod
+    # def predict(self):
+    #     """
+    #     Predict the output (class labels or continuous values) for the given input data.
 
-        Args:
-            x (array-like): Input features for which predictions are to be made.
-            y (array-like): (Optional) Ground truth labels; may be used for special cases 
-                            or further processing. In many cases, this can be ignored.
+    #     Args:
+    #         x (array-like): Input features for which predictions are to be made.
+    #         y (array-like): (Optional) Ground truth labels; may be used for special cases 
+    #                         or further processing. In many cases, this can be ignored.
 
-        Returns:
-            array-like: Predicted outputs (e.g., class labels or regression values).
-        """
-        pass
+    #     Returns:
+    #         array-like: Predicted outputs (e.g., class labels or regression values).
+    #     """
+    #     pass
 
-    @abstractmethod
-    def predict_proba(self):
-        """
-        Predict the probability estimates for each class given the input data.
+    # @abstractmethod
+    # def predict_proba(self):
+    #     """
+    #     Predict the probability estimates for each class given the input data.
 
-        Args:
-            x (array-like): Input features for which probability estimates are desired.
-            y (array-like): (Optional) Ground truth labels; may be used for special processing.
+    #     Args:
+    #         x (array-like): Input features for which probability estimates are desired.
+    #         y (array-like): (Optional) Ground truth labels; may be used for special processing.
         
-        Returns:
-            array-like: An array of probability estimates for each class for every input sample.
-                        For binary classification, typically a shape of (n_samples, 2) is expected.
-        """
-        pass
+    #     Returns:
+    #         array-like: An array of probability estimates for each class for every input sample.
+    #                     For binary classification, typically a shape of (n_samples, 2) is expected.
+    #     """
+    #     pass
 
     @abstractmethod
     def evaluate(self):
@@ -72,16 +72,6 @@ class BaseModel(ABC):
         """
         pass
 
-    @abstractmethod
-    def get_name(self):
-        """
-        Get the name of the model.
-
-        Returns:
-            str: The name of the model.
-        """
-        pass
-    
     # @abstractmethod
     # def set_train_data(self, x, y):
     #     pass
