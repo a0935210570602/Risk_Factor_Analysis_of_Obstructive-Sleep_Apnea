@@ -76,7 +76,7 @@ def svm_linear_fit(self):
     self.linear_train_predicted=self.linear_svc_model.predict(self.train_X)
     self.linear_test_predicted=self.linear_svc_model.predict(self.test_X)
 
-    # 使用訓練資料預測機率
+    # 使用訓練資料預測機率S
     self.linear_train_predicted_prob =self.linear_svc_model.predict_proba(self.train_X)
     self.linear_test_predicted_prob =self.linear_svc_model.predict_proba(self.test_X)
 

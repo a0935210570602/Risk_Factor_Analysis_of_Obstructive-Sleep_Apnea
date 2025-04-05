@@ -19,3 +19,5 @@ record/
 
 # 📂 macOS 系統檔
 .DS_Store
+
+raw_data/
