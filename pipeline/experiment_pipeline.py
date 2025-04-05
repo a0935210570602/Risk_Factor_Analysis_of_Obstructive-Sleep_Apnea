@@ -1,7 +1,7 @@
 import pandas as pd
-from model_config_parser import ModelConfigParser
-from model_builder import ModelBuilder
-from data_processor import DataProcessor
+from .model_config_parser import ModelConfigParser
+from .model_builder import ModelBuilder
+from .data_processor import DataProcessor
 
 class ExperimentPipeline:
     def __init__(self, exp_config):
