@@ -15,26 +15,42 @@ from second_recurrent_prediction import SecondStrokePrediction
 # model_prediction.predict_gradient_boost()
 # model_prediction.predict_xgboost()
 # model_prediction.show_all_result()
+age_below_65_path = 'raw_data/age_below_65.csv'
+age_between_65_80_path = 'raw_data/age_between_65_80.csv'
+age_over_80_path = 'raw_data/age_over_80.csv'
 
 # 定義模型配置
-model_configs = [
-    {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
-    {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 1000}, "runs": 1},
-    # {"name": "xgb", "params": {"n_estimators": 100, "max_depth": 4}, "runs": 3},
-    # {"name": "decision_tree", "params": {"max_depth": 3}, "runs": 3},
-    # {"name": "decision_tree", "params": {"max_depth": 5}, "runs": 3},
-    # {"name": "decision_tree", "params": {"max_depth": None}, "runs": 3},
+exp_config = [
+    {
+        "data_config": {
+            "path": age_below_65_path,
+            "test_size": 0.2,
+            "random_state": 42
+        },
+        "model_config": {
+            "model_configs": [
+                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
+                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 2000}, "runs": 3}
+            ]
+        }
+    },
+    {
+        "data_config": {
+            "path": age_between_65_80_path,
+            "test_size": 0.2,
+            "random_state": 42
+        },
+        "model_config": {
+            "model_configs": [
+                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 1500}, "runs": 3},
+                {"model_name": "svm_linear", "params": {"C": 0.5, "max_iter": 2000}, "runs": 3}
+            ]
+        }
+    }
 ]
 
-import numpy as np
-from sklearn.datasets import make_classification
-
-# 建立合成數據
-X_train, y_train = make_classification(n_samples=100, n_features=20, random_state=42)
-X_test, y_test = make_classification(n_samples=30, n_features=20, random_state=43)
-
 # 初始化並執行實驗流程控制器
-pipeline = ExperimentPipeline(model_configs, X_train, y_train, X_test, y_test)
+pipeline = ExperimentPipeline(exp_config)
 results = pipeline.run()
 
 for res in results:
