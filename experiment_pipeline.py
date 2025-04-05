@@ -32,7 +32,7 @@ class ExperimentPipeline:
         results = []
         for exp in self.exp_config:
             data_config = exp.get("data_config", {})
-            model_configs = exp.get("model_config", {}).get("model_configs", [])
+            model_configs = exp.get("model_config", {})
             parser = ModelConfigParser(model_configs)
             self.parsed_configs = parser.parse()
             # Data processing: load and split data

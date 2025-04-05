@@ -18,13 +18,3 @@ class ModelConfigParser:
             }
             parsed_configs.append(parsed_config)
         return parsed_configs
-
-    def display(self):
-        # 輸出所有解析結果
-        for config in self.parse():
-            print(f"Model: {config['name']}, Params: {config['params']}, Runs: {config['runs']}")
-
-# 測試解析器
-if __name__ == '__main__':
-    parser = ModelConfigParser(model_configs)
-    parser.display()

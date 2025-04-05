@@ -27,12 +27,11 @@ exp_config = [
             "test_size": 0.2,
             "random_state": 42
         },
-        "model_config": {
-            "model_configs": [
+        "model_config": 
+            [
                 {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
                 {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 2000}, "runs": 3}
             ]
-        }
     },
     {
         "data_config": {
@@ -40,12 +39,11 @@ exp_config = [
             "test_size": 0.2,
             "random_state": 42
         },
-        "model_config": {
-            "model_configs": [
+        "model_config": 
+            [
                 {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 1500}, "runs": 3},
                 {"model_name": "svm_linear", "params": {"C": 0.5, "max_iter": 2000}, "runs": 3}
             ]
-        }
     }
 ]
 
@@ -53,5 +51,5 @@ exp_config = [
 pipeline = ExperimentPipeline(exp_config)
 results = pipeline.run()
 
-for res in results:
-    print(res)
+# for res in results:
+#     print(res)

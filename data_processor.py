@@ -50,7 +50,6 @@ class DataProcessor:
         train_df = pd.concat([stroke_train_df, normal_train_df], axis=0).reset_index(drop=True)
         test_df = pd.concat([stroke_test_df, normal_test_df], axis=0).reset_index(drop=True)
         
-        print(train_df)
         # 選取特徵與標籤
         train_X = train_df[SELECTED_FEATURE_LIST]
         train_Y = train_df[LABEL_NAME]
