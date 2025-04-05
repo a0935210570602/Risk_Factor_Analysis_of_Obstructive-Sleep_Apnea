@@ -29,7 +29,8 @@ exp_config = [
         },
         "model_config": 
             [
-                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+                {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
+                {"model_name": "svm_linear", "params": {"C": 0.5, "max_iter": 1500}, "runs": 3},
             ]
     }
 ]
@@ -37,6 +38,4 @@ exp_config = [
 # 初始化並執行實驗流程控制器kj
 pipeline = ExperimentPipeline(exp_config)
 results = pipeline.run()
-
-for res in results:
-    print(res)
+print("Results:", results)

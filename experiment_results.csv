@@ -1,0 +1,7 @@
+experiment,model,model_config,run,acc,recall,precision,auc,f1,data_path
+exp1,svm_linear,"{'C': 1.0, 'max_iter': 3000}",1,0.974,0.25,0.125,0.264,0.167,raw_data/age_below_65.csv
+exp1,svm_linear,"{'C': 1.0, 'max_iter': 3000}",2,0.974,0.25,0.125,0.264,0.167,raw_data/age_below_65.csv
+exp1,svm_linear,"{'C': 1.0, 'max_iter': 3000}",3,0.974,0.25,0.125,0.264,0.167,raw_data/age_below_65.csv
+exp1,svm_linear,"{'C': 0.5, 'max_iter': 1500}",1,0.961,0.75,0.176,0.22,0.286,raw_data/age_below_65.csv
+exp1,svm_linear,"{'C': 0.5, 'max_iter': 1500}",2,0.961,0.75,0.176,0.22,0.286,raw_data/age_below_65.csv
+exp1,svm_linear,"{'C': 0.5, 'max_iter': 1500}",3,0.961,0.75,0.176,0.22,0.286,raw_data/age_below_65.csv
