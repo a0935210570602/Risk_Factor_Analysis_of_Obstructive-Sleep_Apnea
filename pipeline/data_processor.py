@@ -39,12 +39,21 @@ class DataProcessor:
         # 根據 "Second_Stroke" 欄位抓取資料
         stroke_df = df[df["Second_Stroke"] == 1]
         normal_df = df[df["Second_Stroke"] == 0]
-        
+
+        print(f"Stroke data count: {len(stroke_df)}")
+        print(f"Normal data count: {len(normal_df)}")
+
         # 分別拆分正常與中風資料 (80% train, 20% test)
         normal_train_df, normal_test_df = model_selection.train_test_split(
             normal_df, train_size=self.train_size, random_state=self.random_state)
         stroke_train_df, stroke_test_df = model_selection.train_test_split(
-            stroke_df, train_size=self.test_size, random_state=self.random_state)
+            stroke_df, train_size=self.train_size, random_state=self.random_state)
+        print("stroke_train_df: ", stroke_train_df.shape)
+        print("stroke_test_df: ", stroke_test_df.shape)
+        # normal_train_df, normal_test_df = model_selection.train_test_split(
+        #     normal_df, train_size=self.train_size, random_state=self.random_state)
+        # stroke_train_df, stroke_test_df = model_selection.train_test_split(
+        #     stroke_df, train_size=self.test_size, random_state=self.random_state)
         
         # 合併訓練集與測試集
         train_df = pd.concat([stroke_train_df, normal_train_df], axis=0).reset_index(drop=True)

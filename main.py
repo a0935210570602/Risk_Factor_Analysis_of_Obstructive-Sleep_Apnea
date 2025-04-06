@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore", category=ConvergenceWarning)
 # stroke_filename = 'raw_data/age_below_65_stroke.csv'
 # model_prediction = SecondStrokePrediction(normal_filename, stroke_filename)
 # model_prediction.predict_svm_linear()
-# model_prediction.predict_svm_poly()
+# model_prediction.predict_svm_poly()jjjhkg
 # model_prediction.predict_svm_rbf()
 # model_prediction.predict_decision_tree()
 # model_prediction.predict_random_forest()
