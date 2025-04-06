@@ -14,8 +14,30 @@ EXP_CONFIG = [
             "random_state": 42,
             "balance": "smote"  # 可選值: None 或 "smote"
         },
+        "feature_select_config": {
+            "method": "knn",
+            "n_features_to_select": 'auto',
+            "direction": "backward",
+            "n_neighbors": 5
+        },
         "model_config": [
-            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+        ]
+    },{
+        "data_config": {
+            "path": age_below_65_path,
+            "test_size": 0.2,
+            "random_state": 42,
+            "balance": "smote"  # 可選值: None 或 "smote"
+        },
+        "feature_select_config": {
+            "method": "knn",
+            "n_features_to_select": 'auto',
+            "direction": "forward",
+            "n_neighbors": 5
+        },
+        "model_config": [
+            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
         ]
     },
     {
@@ -23,10 +45,31 @@ EXP_CONFIG = [
             "path": age_below_65_path,
             "test_size": 0.2,
             "random_state": 42,
-            "balance": "none"  # 可選值: None 或 "smote"
+            "balance": "smote"  # 可選值: None 或 "smote"
+        },
+        "feature_select_config": {
+            "method": "logistic",
+            "n_features_to_select": "auto",
+            "direction": "backward",
+            "max_iter": 1500
         },
         "model_config": [
-            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 3},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
         ]
-    }
+    },{
+        "data_config": {
+            "path": age_below_65_path,
+            "test_size": 0.2,
+            "random_state": 42,
+            "balance": "smote"  # 可選值: None 或 "smote"
+        },
+        "feature_select_config": {
+            "method": "linear",
+            "n_features_to_select": 5,
+            "direction": "forward"
+        },
+        "model_config": [
+            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+        ]
+    },
 ]

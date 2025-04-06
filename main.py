@@ -1,6 +1,16 @@
 from pipeline.experiment_pipeline import ExperimentPipeline
-from second_recurrent_prediction import SecondStrokePrediction
 from config.exp_config import EXP_CONFIG
+import warnings
+from sklearn.exceptions import DataConversionWarning, ConvergenceWarning
+
+# 忽略 DataConversionWarning 警告
+warnings.filterwarnings("ignore", category=DataConversionWarning)
+# 忽略關於 n_splits 的警告（訊息中包含 "The least populated class in y has only"）
+warnings.filterwarnings("ignore", message="The least populated class in y has only")
+# 忽略 SVM 的 ConvergenceWarning 警告
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
+
+
 # normal_filename = 'raw_data/age_below_65_health.csv'
 # stroke_filename = 'raw_data/age_below_65_stroke.csv'
 # model_prediction = SecondStrokePrediction(normal_filename, stroke_filename)
@@ -17,4 +27,4 @@ from config.exp_config import EXP_CONFIG
 # 初始化並執行實驗流程控制器kj
 pipeline = ExperimentPipeline(EXP_CONFIG)
 results = pipeline.run()
-print("Results:", results)
+# print("Results:", results)

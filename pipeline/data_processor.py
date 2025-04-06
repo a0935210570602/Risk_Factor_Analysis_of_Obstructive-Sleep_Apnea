@@ -17,6 +17,7 @@ class DataProcessor:
         self.test_size = data_config.get("test_size", 0.2)
         self.train_size = 1 - self.test_size
         self.random_state = data_config.get("random_state", 42)
+        self.selected_feature_list = data_config.get("selected_feature_list", None)
 
     def load_data(self):
         """
@@ -33,8 +34,7 @@ class DataProcessor:
         df = pd.read_csv(self.path)
         
         # 取得所有欄位（作為特徵）除了 "Second_Stroke"
-        feature_list = [col for col in df.columns if col != 'Second_Stroke']
-        print("Feature list:", feature_list)
+        # feature_list = [col for col in df.columns if col != 'Second_Stroke']
         
         # 根據 "Second_Stroke" 欄位抓取資料
         stroke_df = df[df["Second_Stroke"] == 1]
@@ -50,10 +50,11 @@ class DataProcessor:
         train_df = pd.concat([stroke_train_df, normal_train_df], axis=0).reset_index(drop=True)
         test_df = pd.concat([stroke_test_df, normal_test_df], axis=0).reset_index(drop=True)
         
+
         # 利用 feature_list 選取特徵，並以 LABEL_NAME 作為標籤
-        train_X = train_df[feature_list]
+        train_X = train_df[self.selected_feature_list]
         train_Y = train_df[LABEL_NAME]
-        test_X = test_df[feature_list]
+        test_X = test_df[self.selected_feature_list]
         test_Y = test_df[LABEL_NAME]
         
-        return train_X, train_Y, test_X, test_Y, feature_list
+        return train_X, train_Y, test_X, test_Y
