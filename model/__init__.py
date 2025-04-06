@@ -1,7 +1,8 @@
 from .base_model import BaseModel
-from .linear_svc_model import LinearSvcModel
-
+from .decision_tree import DecisionTreeModel
+from .linear_svc import LinearSvcModel
 __all__ = [
     "BaseModel",
-    "LinearSvcModel"
+    "LinearSvcModel",
+    "DecisionTreeModel",
 ]

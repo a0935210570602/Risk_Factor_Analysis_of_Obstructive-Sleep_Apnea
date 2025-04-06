@@ -1,6 +1,7 @@
 # model_builder.py
 
-from model.linear_svc_model import LinearSvcModel
+from model.linear_svc import LinearSvcModel
+from model.decision_tree import DecisionTreeModel
 # 如果有其他模型，也可在此處引入，例如：
 # from .xgb_model import XGBModel
 # from .decision_tree_model import DecisionTreeModel
@@ -18,8 +19,7 @@ class ModelBuilder:
         # elif model_name == "xgb":
         #     from .xgb_model import XGBModel
         #     return XGBModel(params)
-        # elif model_name == "decision_tree":
-        #     from .decision_tree_model import DecisionTreeModel
-        #     return DecisionTreeModel(params)
+        elif model_name == "decision_tree":
+            return DecisionTreeModel(params)
         else:
             raise ValueError(f"Unsupported model name: {model_name}")

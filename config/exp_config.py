@@ -21,7 +21,11 @@ EXP_CONFIG = [
             "n_neighbors": 5
         },
         "model_config": [
-            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "linear", "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "poly", "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "rbf", "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "sigmoid", "max_iter": 3000}, "runs": 1},
+            {"model_name": "decision_tree", "params": {"criterion": "gini", "max_depth": 5, "splitter": "best"}, "runs": 1}
         ]
     },{
         "data_config": {
@@ -37,7 +41,11 @@ EXP_CONFIG = [
             "n_neighbors": 5
         },
         "model_config": [
-            {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "linear", "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "poly", "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "rbf", "max_iter": 3000}, "runs": 1},
+            {"model_name": "svm_linear", "params": {"C": 1.0, "kernal": "sigmoid", "max_iter": 3000}, "runs": 1},
+            {"model_name": "decision_tree", "params": {"criterion": "gini", "max_depth": 5, "splitter": "best"}, "runs": 1}
         ]
     },
     {
@@ -55,6 +63,7 @@ EXP_CONFIG = [
         },
         "model_config": [
             {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+            {"model_name": "decision_tree", "params": {"criterion": "gini", "max_depth": 5, "splitter": "best"}, "runs": 1}
         ]
     },{
         "data_config": {
@@ -65,11 +74,12 @@ EXP_CONFIG = [
         },
         "feature_select_config": {
             "method": "linear",
-            "n_features_to_select": 5,
+            "n_features_to_select": "auto",
             "direction": "forward"
         },
         "model_config": [
             {"model_name": "svm_linear", "params": {"C": 1.0, "max_iter": 3000}, "runs": 1},
+            {"model_name": "decision_tree", "params": {"criterion": "gini", "max_depth": 5, "splitter": "best"}, "runs": 1}
         ]
     },
 ]
