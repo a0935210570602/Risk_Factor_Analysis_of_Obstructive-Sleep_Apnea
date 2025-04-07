@@ -7,17 +7,30 @@ class SecondStrokePrediction:
         'HTN(0/1)', 'DM(0/1)', 'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)',
         'LDL ', 'cholesterol', 'TG', 'Cre', 'SGPT', 'HbA1c', 'MRS']
     LABEL_NAME = ['Second_Stroke']
-    RESULT_DF_COLUMN = ['Model name','dataset','accuracy','precision','recall','f1-score','auc']
+    RESULT_DF_COLUMN = ['Model name','dataset','accuracy','precision','recall','f1-score','auc','feature','balance_config','feature_selection_config']
     TEN_FOLD_DF_COLUMN = ['Model name', 'dataset', 'accuracy_mean', 'accuracy_std',
         'precision_mean', 'precision_std', 'recall_mean', 'recall_std',
-        'f1-score_mean', 'f1-score_std', 'auc_mean', 'auc_std']
+        'f1-score_mean', 'f1-score_std', 'auc_mean', 'auc_std','feature','balance_config','feature_selection_config']
     ROC_CURVE_RESULT_COLUMN = ['model', 'dataset', 'auc', 'fpr', 'tpr']
+    RANDOM_SEED = 42
+    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "balance": "balance"}
+    balance_config = {"sample amount": None, "random_state": 42, "neighbors": 5}
+    feature_selection_config = {
+        "name": None,
+        "estimator": "logistic",     # 以 LogisticRegression 作為基底
+        "direction": "forward", 
+        "n_neighbors":5,    # 選擇後向淘汰法 (也可以設定 'forward')
+        "n_features_to_select": "auto",   # 選取 5 個最佳特徵
+        "max_iter": 1000, 
+        "max_depth":5,
+        "learning_rate":0.1,     # LogisticRegression 的最大迭代次數
+        "random_state": 42           # 隨機種子，確保重現性
+    }
 
-    def __init__(self, normal_filename: str, stroke_filename: str):
-        self.normal_path = os.path.join(os.getcwd(), normal_filename)
-        self.stroke_path = os.path.join(os.getcwd(), stroke_filename)
-        self.normal_df = pd.read_csv(self.normal_path)
-        self.stroke_df = pd.read_csv(self.stroke_path)
+
+    def __init__(self, file_path: str):
+        self.data_config["path"] = os.path.join(os.getcwd(), file_path)
+        # self.data_path = os.path.join(os.getcwd(), file_path)
         self.data_df = pd.DataFrame
         self.train_X = pd.DataFrame
         self.train_Y = pd.DataFrame
@@ -40,11 +53,26 @@ class SecondStrokePrediction:
     from ._predict import predict_gradient_boost
     from ._predict import show_all_result
     from ._data_processing import load_data
+    from ._data_processing import standardize_data
     from ._data_processing import cross_validation
     from ._data_processing import gen_result
     from ._data_processing import display_total_result_train
     from ._data_processing import display_total_result_test
     from ._data_processing import display_total_ten_fold_result
+    from ._balance_data import smote_standard
+    from ._balance_data import smote_svm
+    from ._balance_data import smote_borderline
+    from ._balance_data import smote_adasyn
+    from ._feature_select import sfs_logistic_feature_selection
+    from ._feature_select import sfs_knn_feature_selection
+    from ._feature_select import sfs_linear_feature_selection
+    from ._feature_select import sfs_random_forest_feature_selection
+    from ._feature_select import sfs_xgboost_feature_selection
+    from ._feature_select import permutation_feature_selection
+    from ._feature_select import boruta_feature_selection
+    from ._feature_select import rfecv_feature_selection
+    from ._feature_select import variance_threshold_selection
+    from ._feature_select import l1_feature_selection
     from ._feature_analyze import pca
     from ._feature_analyze import tsne
     from ._model import k_means_fit

@@ -1,18 +1,36 @@
 import pandas as pd
 import os
 from sklearn import model_selection, metrics
+from sklearn.discriminant_analysis import StandardScaler
 
 # TESTED
 def load_data(self):
+    self.SELECTED_FEATURE_LIST = ['age', 'sex', 'HLOS', 'NIHSS', 'tPA(0/1)', 'EVT(0/1)',
+        'HTN(0/1)', 'DM(0/1)', 'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)',
+        'LDL ', 'cholesterol', 'TG', 'Cre', 'SGPT', 'HbA1c', 'MRS']
+    # 逐一取出各個變數
+    data_path = self.data_config["path"]
+    train_size = self.data_config["train_size"]
+    random_state = self.data_config["random_state"]
+    balance_method = self.data_config["balance"]
+    
+    self.data_df = pd.read_csv(data_path)
+
     # Split data to Training set & Testing set
-    self.data_df = pd.concat([self.stroke_df, self.normal_df], axis=0)
-    self.normal_train_df, self.normal_test_df = model_selection.train_test_split(self.normal_df, train_size=0.8)
-    self.stroke_train_df, self.stroke_test_df = model_selection.train_test_split(self.stroke_df, train_size=0.8)
+    stroke_df = self.data_df[self.data_df["Second_Stroke"] == 1]
+    normal_df = self.data_df[self.data_df["Second_Stroke"] == 0]
+
+    self.normal_train_df, self.normal_test_df = model_selection.train_test_split(
+            normal_df, train_size=train_size, random_state=random_state)
+    self.stroke_train_df, self.stroke_test_df = model_selection.train_test_split(
+            stroke_df, train_size=train_size, random_state=random_state)
 
     train_df = pd.concat([self.stroke_train_df, self.normal_train_df], axis = 0)
     test_df = pd.concat([self.stroke_test_df, self.normal_test_df], axis = 0)
-    train_df.reset_index(inplace=True)
-    test_df.reset_index(inplace=True)
+
+    # 將資料隨機打亂並重設索引
+    train_df = train_df.sample(frac=1, random_state=random_state).reset_index(drop=True)
+    test_df = test_df.sample(frac=1, random_state=random_state).reset_index(drop=True)
 
     # Select features of training & testing data
     self.train_X = train_df[self.SELECTED_FEATURE_LIST]
@@ -23,6 +41,16 @@ def load_data(self):
 
     self.data_X = self.data_df[self.SELECTED_FEATURE_LIST]
     self.data_Y = self.data_df[self.LABEL_NAME]
+
+def standardize_data(self):
+    # 資料標準化：先對訓練資料 fit_transform，再 transform 測試及全體資料
+    scaler = StandardScaler()
+    self.train_X = pd.DataFrame(scaler.fit_transform(self.train_X),
+                                columns=self.SELECTED_FEATURE_LIST)
+    self.test_X = pd.DataFrame(scaler.transform(self.test_X),
+                                columns=self.SELECTED_FEATURE_LIST)
+    self.data_X = pd.DataFrame(scaler.transform(self.data_X),
+                                columns=self.SELECTED_FEATURE_LIST)
 
 # TODO
 # 10-fold
@@ -59,7 +87,10 @@ def cross_validation(self, model, name):
         'f1-score_mean': [avg_scores['test_f1']],
         'f1-score_std': [std_scores['test_f1']],
         'auc_mean': [avg_scores['test_roc_auc']],
-        'auc_std': [std_scores['test_roc_auc']]
+        'auc_std': [std_scores['test_roc_auc']],
+        'feature':[self.SELECTED_FEATURE_LIST],
+        'balance_config':[self.balance_config],
+        'feature_selection_config':[self.feature_selection_config],
     })
 
     dir_path = os.path.join(self.PATH, '10-fold')
@@ -94,7 +125,10 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
         'precision': precision,
         'recall': recall,
         'f1-score': f1_score_value,
-        'auc': auc_curve
+        'auc': auc_curve,
+        'feature':[self.SELECTED_FEATURE_LIST],
+        'balance_config':[self.balance_config],
+        'feature_selection_config':[self.feature_selection_config],
     }, index=[0])
 
     if is_train:

@@ -1,7 +1,6 @@
 import pandas as pd
 
 def predict_svm_linear(self):
-    self.load_data()
     self.svm_linear_fit()
     name = 'SVM Linear'
     train_title = f'{name} Train'
@@ -24,7 +23,6 @@ def predict_svm_linear(self):
     self.cross_validation(self.linear_svc_model,name)
 
 def predict_svm_poly(self):
-    self.load_data()
     self.svm_poly_fit()
     name = 'SVM Poly'
     train_title = f'{name} Train'
@@ -46,7 +44,6 @@ def predict_svm_poly(self):
     self.cross_validation(self.poly_svc_model,name)
 
 def predict_svm_rbf(self):
-    self.load_data()
     self.svm_rbf_fit()
     name = 'SVM RBF'
     train_title = f'{name} Trian'
@@ -68,7 +65,6 @@ def predict_svm_rbf(self):
     self.cross_validation(self.rbf_svc_model,name)
 
 def predict_decision_tree(self):
-    self.load_data()
     self.decision_tree_fit()
     name = 'Decision Tree'
     train_title = f'{name} Trian'
@@ -77,6 +73,9 @@ def predict_decision_tree(self):
     self.confusion_matrix(self.test_Y,self.decision_test_predicted,test_title)
     self.decision_tree_train_auc, self.decision_tree_train_fpr, self.decision_tree_train_tpr = self.plot_ROC_curve(self.train_Y,self.decision_train_predicted_prob[:,1],train_title)
     self.decision_tree_test_auc, self.decision_tree_test_fpr, self.decision_tree_test_tpr = self.plot_ROC_curve(self.test_Y,self.decision_test_predicted_prob[:,1],test_title)
+    print("預期特徵數量:", len(self.SELECTED_FEATURE_LIST))
+    print("訓練資料特徵數:", self.train_X.shape[1])
+
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.decision_tree_train_auc, 
          'fpr': self.decision_tree_train_fpr, 'tpr': self.decision_tree_train_tpr},
@@ -94,7 +93,6 @@ def predict_decision_tree(self):
     self.plot_tree_graph(is_forest=False)
 
 def predict_random_forest(self):
-    self.load_data()
     self.random_forest_fit()
     name = 'Random Forest'
     train_title = f'{name} Trian'
@@ -120,7 +118,6 @@ def predict_random_forest(self):
     self.plot_tree_graph(is_forest=True)
 
 def predict_xgboost(self):
-    self.load_data()
     self.xgboost_fit()
     name = 'XGBoost'
     train_title = f'{name} Trian'
@@ -144,7 +141,6 @@ def predict_xgboost(self):
     self.plot_xgboost_feature_importance()
 
 def predict_adaboost(self):
-    self.load_data()
     self.adaboost_fit()
     name = 'AdaBoost'
     train_title = f'{name} Trian'
@@ -169,7 +165,6 @@ def predict_adaboost(self):
     self.plot_feature_importance_bar_chart(importance_list, 'adaboost', name)
 
 def predict_gradient_boost(self):
-    self.load_data()
     self.gradient_boost_fit()
     name = 'Gradient Boost'
     train_title = f'{name} Trian'
@@ -197,5 +192,5 @@ def show_all_result(self):
     self.display_total_result_train()
     self.display_total_result_test()
     self.display_total_ten_fold_result()
-    self.plot_total_ROC_curve(is_train=True)
-    self.plot_total_ROC_curve(is_train=False)
+    # self.plot_total_ROC_curve(is_train=True)
+    # self.plot_total_ROC_curve(is_train=False)

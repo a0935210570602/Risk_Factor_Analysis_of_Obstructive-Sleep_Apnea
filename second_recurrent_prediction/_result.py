@@ -19,7 +19,10 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
         'precision': precision,
         'recall': recall,
         'f1-score': f1_score_value,
-        'auc': auc_curve
+        'auc': auc_curve,
+        'feature':self.SELECTED_FEATURE_LIST,
+        'balance_config':self.balance_config,
+        'feature_selection_config':self.feature_selection_config,
     }, index=[0])
 
     if is_train:
