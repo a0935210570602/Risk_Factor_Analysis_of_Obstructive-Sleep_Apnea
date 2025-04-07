@@ -11,5 +11,4 @@ COPY . .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 # RUN pip install --no-cache-dir --progress-bar=off -r requirements.txt
 
-# 預設執行指令（可依需求調整）
 # CMD ["python", "run_experiments.py"]

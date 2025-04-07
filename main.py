@@ -8,7 +8,7 @@ warnings.filterwarnings("ignore", category=DataConversionWarning)
 warnings.filterwarnings("ignore", message="The least populated class in y has only")
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
-file_path = 'raw_data/age_below_65.csv'
+file_path = 'raw_data/age_below_65_91_samples.csv'
 model_prediction = SecondStrokePrediction(file_path)
 
 model_prediction.load_data()
@@ -26,7 +26,6 @@ model_prediction.predict_gradient_boost()
 model_prediction.predict_xgboost()
 
 ############################################
-
 
 model_prediction.load_data()
 model_prediction.standardize_data()
