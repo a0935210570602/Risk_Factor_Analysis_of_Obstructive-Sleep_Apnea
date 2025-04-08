@@ -58,7 +58,6 @@ def sfs_linear_feature_selection(self):
 def sfs_knn_feature_selection(self):
     config = self.feature_selection_config
     self.feature_selection_config["name"] = "sfs_knn_feature_selection"
-
     direction = config.get("direction", "backward")
     n_features_to_select = config.get("n_features_to_select", "auto")
     n_neighbors = config.get("n_neighbors", 3)

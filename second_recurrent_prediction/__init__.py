@@ -14,7 +14,7 @@ class SecondStrokePrediction:
     ROC_CURVE_RESULT_COLUMN = ['model', 'dataset', 'auc', 'fpr', 'tpr']
     RANDOM_SEED = 42
     data_config = { "path": None, "train_size": 0.8, "random_state": 42, "balance": "balance"}
-    balance_config = {"sample amount": None, "random_state": 42, "neighbors": 5}
+    balance_config = {"name": None, "sample amount": None, "random_state": 42, "neighbors": 5}
     feature_selection_config = {
         "name": None,
         "estimator": "logistic",     # 以 LogisticRegression 作為基底
@@ -55,7 +55,6 @@ class SecondStrokePrediction:
     from ._data_processing import load_data
     from ._data_processing import standardize_data
     from ._data_processing import cross_validation
-    from ._data_processing import gen_result
     from ._data_processing import display_total_result_train
     from ._data_processing import display_total_result_test
     from ._data_processing import display_total_ten_fold_result
@@ -90,3 +89,4 @@ class SecondStrokePrediction:
     from ._plot import plot_tree_graph
     from ._plot import plot_xgboost_feature_importance
     from ._plot import plot_total_ROC_curve
+    from ._result import gen_result

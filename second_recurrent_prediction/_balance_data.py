@@ -4,6 +4,7 @@ import pandas as pd
 
 # 標準SMOTE方法
 def smote_standard(self):
+    self.balance_config["name"] = "smote_standard"
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
 
@@ -26,6 +27,7 @@ def smote_standard(self):
 
 # Borderline SMOTE: 著重處理邊界附近樣本（分類邊界附近）
 def smote_borderline(self):
+    self.balance_config["name"] = "smote_borderline"
     kind='borderline-1'
     # 印出原始標籤分布
     print("原始資料標籤分布：")
@@ -47,6 +49,7 @@ def smote_borderline(self):
 
 # SVM SMOTE: 使用支援向量機 (SVM) 決定生成新樣本的位置
 def smote_svm(self):
+    self.balance_config["name"] = "smote_svm"
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
     svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors)
@@ -59,6 +62,7 @@ def smote_svm(self):
 
 # ADASYN: 自適應生成更難分類的樣本（錯分率高的區域樣本更多）
 def smote_adasyn(self):
+    self.balance_config["name"] = "smote_adasyn"
     random_state = self.balance_config.get("random_state", 42)
     n_neighbors = self.balance_config.get("neighbors", 5)
     adasyn = ADASYN(random_state=random_state, n_neighbors=n_neighbors)

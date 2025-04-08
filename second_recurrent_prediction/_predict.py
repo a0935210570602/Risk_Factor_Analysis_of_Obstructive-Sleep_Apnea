@@ -16,9 +16,9 @@ def predict_svm_linear(self):
          'fpr': self.svm_linear_test_fpr, 'tpr': self.svm_linear_test_tpr},
     ])
     self.roc_curve_result_df = pd.concat([self.roc_curve_result_df, roc_curve_result_df], ignore_index=True)
-
     self.gen_result(self.linear_train_predicted, name, self.svm_linear_train_auc)
     self.gen_result(self.linear_test_predicted, name, self.svm_linear_test_auc, is_train=False)
+    print(99999999999)
 
     self.cross_validation(self.linear_svc_model,name)
 
