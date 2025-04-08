@@ -1,1 +1,23 @@
-ga_env/
+raw_data/
+
+# Python
+second_recurrent_prediction/__pycache__
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code local settings
+.vscode/
+*.code-workspace
+
+# 中間輸出資料
+result_data/
+record/
+
+# 📂 macOS 系統檔
+.DS_Store
+
+raw_data/
