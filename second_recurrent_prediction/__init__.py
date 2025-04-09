@@ -13,7 +13,7 @@ class SecondStrokePrediction:
         'f1-score_mean', 'f1-score_std', 'auc_mean', 'auc_std','feature','balance_config','feature_selection_config']
     ROC_CURVE_RESULT_COLUMN = ['model', 'dataset', 'auc', 'fpr', 'tpr']
     RANDOM_SEED = 42
-    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "balance": "balance"}
+    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "down_sampling_rate":None}
     balance_config = {"name": None, "sample amount": None, "random_state": 42, "neighbors": 5}
     feature_selection_config = {
         "name": None,
@@ -53,6 +53,7 @@ class SecondStrokePrediction:
     from ._predict import predict_gradient_boost
     from ._predict import show_all_result
     from ._data_processing import load_data
+    from ._data_processing import set_downsampling_rate
     from ._data_processing import standardize_data
     from ._data_processing import cross_validation
     from ._data_processing import display_total_result_train

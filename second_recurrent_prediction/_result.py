@@ -21,13 +21,18 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
         'auc': [auc_curve],
         'feature': [self.SELECTED_FEATURE_LIST],
         'balance_config': [self.balance_config],
+        'downsampling_rate': [self.data_config["down_sampling_rate"]],
         'feature_selection_config': [self.feature_selection_config],
     })
 
+    # 取得檔名：age_below_65.csv
+    filename = os.path.basename(self.data_config["path"])
+    # 分離副檔名，取得主檔名：age_below_65
+    name_without_ext, _ = os.path.splitext(filename)
     # 決定目標資料夾與檔案路徑
     dir_path = os.path.join(self.PATH, label)
-    file_path = os.path.join(dir_path, f'{label}.csv')
-
+    file_path = os.path.join(dir_path, f'{label}_{name_without_ext}.csv')
+    print(f'儲存結果到 {file_path}')
     # 確保資料夾存在
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)

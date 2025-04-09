@@ -3,6 +3,9 @@ import os
 from sklearn import model_selection, metrics
 from sklearn.discriminant_analysis import StandardScaler
 
+def set_downsampling_rate(self, rate):
+    self.data_config["down_sampling_rate"] = rate
+
 # TESTED
 def load_data(self):
     self.SELECTED_FEATURE_LIST = ['age', 'sex', 'HLOS', 'NIHSS', 'tPA(0/1)', 'EVT(0/1)',
@@ -12,13 +15,16 @@ def load_data(self):
     data_path = self.data_config["path"]
     train_size = self.data_config["train_size"]
     random_state = self.data_config["random_state"]
-    balance_method = self.data_config["balance"]
     
     self.data_df = pd.read_csv(data_path)
 
     # Split data to Training set & Testing set
     stroke_df = self.data_df[self.data_df["Second_Stroke"] == 1]
     normal_df = self.data_df[self.data_df["Second_Stroke"] == 0]
+
+    down_sampling_rate = self.data_config.get("down_sampling_rate", 1.0)
+    if down_sampling_rate < 1.0:
+        stroke_df = stroke_df.sample(frac=down_sampling_rate, random_state=random_state)
 
     self.normal_train_df, self.normal_test_df = model_selection.train_test_split(
             normal_df, train_size=train_size, random_state=random_state)

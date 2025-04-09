@@ -1,4 +1,12 @@
 from second_recurrent_prediction import SecondStrokePrediction
+
+file_paths = [
+    'raw_data/age_below_65.csv',
+    'raw_data/age_between_65_80.csv',
+    'raw_data/age_over_80.csv',
+    'raw_data/female_data.csv',
+    'raw_data/male_data.csv',
+]
 # 設定 SMOTE 方法，這邊假設方法名稱與類別內定義一致
 smote_methods = [
     SecondStrokePrediction.smote_borderline,
@@ -6,8 +14,6 @@ smote_methods = [
     SecondStrokePrediction.smote_svm,
     SecondStrokePrediction.smote_adasyn,
 ]
-
-
 
 # 設定特徵選擇方法，同樣假設方法名稱與類別內定義一致
 feature_selection_methods = [
@@ -34,3 +40,5 @@ prediction_methods = [
     SecondStrokePrediction.predict_gradient_boost,
     SecondStrokePrediction.predict_xgboost,
 ]
+
+down_sampling_rates = [ 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
