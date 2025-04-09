@@ -1,9 +1,11 @@
-version: '2.2'
-
 services:
   app:
-    build: .
-    image: stroke_analysis:latest  # 👈 加這行
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: stroke_analysis
     volumes:
       - .:/app
     working_dir: /app
+    ports:
+      - "8000:8000"
