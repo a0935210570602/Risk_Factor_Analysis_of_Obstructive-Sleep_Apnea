@@ -10,14 +10,15 @@ def smote_standard(self):
 
     # 印出原始標籤分布
     print("原始資料標籤分布：")
-    print(self.train_Y.iloc[:, 0].value_counts())
+    print(pd.Series(self.train_Y).value_counts())
 
     smote = SMOTE(random_state=random_state, k_neighbors=k_neighbors)
     self.train_X, self.train_Y = smote.fit_resample(self.train_X, self.train_Y)
 
     # 印出平衡後標籤分布
     print("SMOTE 平衡後標籤分布：")
-    print(self.train_Y.iloc[:, 0].value_counts())
+    print(pd.Series(self.train_Y).value_counts())
+
     self.balance_config["sample amount"] = {
         "positive (1)": int((self.train_Y == 1).sum()),
         "negative (0)": int((self.train_Y == 0).sum()),
@@ -31,7 +32,7 @@ def smote_borderline(self):
     kind='borderline-1'
     # 印出原始標籤分布
     print("原始資料標籤分布：")
-    print(self.train_Y.iloc[:, 0].value_counts())
+    print(pd.Series(self.train_Y).value_counts())
 
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
@@ -40,7 +41,7 @@ def smote_borderline(self):
 
     # 印出平衡後標籤分布
     print("SMOTE 平衡後標籤分布：")
-    print(self.train_Y.iloc[:, 0].value_counts())
+    print(pd.Series(self.train_Y).value_counts())
     self.balance_config["sample amount"] = {
         "positive (1)": int((self.train_Y == 1).sum()),
         "negative (0)": int((self.train_Y == 0).sum()),

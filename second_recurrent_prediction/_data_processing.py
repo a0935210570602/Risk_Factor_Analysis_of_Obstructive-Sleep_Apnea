@@ -1,10 +1,51 @@
+import gc
 import pandas as pd
 import os
+from memory_profiler import profile
 from sklearn import model_selection, metrics
 from sklearn.discriminant_analysis import StandardScaler
 
 def set_downsampling_rate(self, rate):
     self.data_config["down_sampling_rate"] = rate
+
+# 每次實驗結束後手動釋放資料框和模型物件
+@profile
+def clear_data_and_model(self):
+    # 設為 None，幫助釋放大型物件的記憶體
+    self.data_df = None
+    self.train_X = None
+    self.train_Y = None
+    self.test_X = None
+    self.test_Y = None
+    self.data_X = None
+    self.data_Y = None
+
+    # 強制刪除變數參考
+    del self.data_df
+    del self.train_X
+    del self.train_Y
+    del self.test_X
+    del self.test_Y
+    del self.data_X
+    del self.data_Y
+
+    # 模型物件釋放（若存在）
+    for model_attr in [
+        'linear_svc_model', 'poly_svc_model', 'rbf_svc_model',
+        'decision_tree_model', 'forest_model', 'xgboost_model',
+        'adaboost_model', 'grad_boost_model'
+    ]:
+        if hasattr(self, model_attr):
+            setattr(self, model_attr, None)
+            delattr(self, model_attr)
+
+    # 關閉圖形（如有畫圖）
+    import matplotlib.pyplot as plt
+    plt.close('all')
+
+    # 多次強制垃圾回收
+    for _ in range(3):
+        gc.collect()
 
 # TESTED
 def load_data(self):
@@ -40,13 +81,13 @@ def load_data(self):
 
     # Select features of training & testing data
     self.train_X = train_df[self.SELECTED_FEATURE_LIST]
-    self.train_Y = train_df[self.LABEL_NAME]
+    self.train_Y = train_df[self.LABEL_NAME].values.ravel()
 
     self.test_X = test_df[self.SELECTED_FEATURE_LIST]
-    self.test_Y = test_df[self.LABEL_NAME]
+    self.test_Y = test_df[self.LABEL_NAME].values.ravel()
 
     self.data_X = self.data_df[self.SELECTED_FEATURE_LIST]
-    self.data_Y = self.data_df[self.LABEL_NAME]
+    self.data_Y = self.data_df[self.LABEL_NAME].values.ravel()
 
 def standardize_data(self):
     # 資料標準化：先對訓練資料 fit_transform，再 transform 測試及全體資料

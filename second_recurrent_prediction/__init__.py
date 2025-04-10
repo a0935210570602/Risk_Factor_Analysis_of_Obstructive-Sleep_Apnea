@@ -59,6 +59,7 @@ class SecondStrokePrediction:
     from ._data_processing import display_total_result_train
     from ._data_processing import display_total_result_test
     from ._data_processing import display_total_ten_fold_result
+    from ._data_processing import clear_data_and_model
     from ._balance_data import smote_standard
     from ._balance_data import smote_svm
     from ._balance_data import smote_borderline
