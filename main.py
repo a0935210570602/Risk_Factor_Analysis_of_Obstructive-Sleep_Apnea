@@ -6,10 +6,7 @@ from exp_config import (smote_methods, feature_selection_methods,
                         prediction_methods, down_sampling_rates, file_paths)
 from second_recurrent_prediction import SecondStrokePrediction
 from sklearn.exceptions import DataConversionWarning, ConvergenceWarning, UndefinedMetricWarning
-import warnings
 
-# 壓制 joblib resource_tracker 警告
-warnings.filterwarnings("ignore", message="resource_tracker:.*joblib_memmapping_folder")
 warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 warnings.filterwarnings("ignore", category=DataConversionWarning)
 warnings.filterwarnings("ignore", category=ConvergenceWarning)

@@ -59,8 +59,9 @@ def sfs_knn_feature_selection(self):
     config = self.feature_selection_config
     self.feature_selection_config["name"] = "sfs_knn_feature_selection"
     direction = config.get("direction", "backward")
+
     n_features_to_select = config.get("n_features_to_select", "auto")
-    n_neighbors = config.get("n_neighbors", 3)
+    n_neighbors = config.get("n_neighbors", )
     
     estimator = KNeighborsClassifier(n_neighbors=n_neighbors)
     sfs = SequentialFeatureSelector(estimator,
@@ -154,7 +155,7 @@ def boruta_feature_selection(self):
                                        n_jobs=-1)
     boruta_selector = BorutaPy(estimator, n_estimators='auto',
                                random_state=config.get("random_state", 42))
-    boruta_selector.fit(self.train_X.values, self.train_Y.values.ravel())
+    boruta_selector.fit(self.train_X.values, self.train_Y)
     selected_features = self.train_X.columns[boruta_selector.support_].tolist()
     
     self.SELECTED_FEATURE_LIST = selected_features

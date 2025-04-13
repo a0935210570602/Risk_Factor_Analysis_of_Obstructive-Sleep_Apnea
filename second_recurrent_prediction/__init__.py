@@ -51,6 +51,7 @@ class SecondStrokePrediction:
     from ._predict import predict_xgboost
     from ._predict import predict_adaboost
     from ._predict import predict_gradient_boost
+    from ._predict import predict_dcnn
     from ._predict import show_all_result
     from ._data_processing import load_data
     from ._data_processing import set_downsampling_rate
@@ -60,6 +61,7 @@ class SecondStrokePrediction:
     from ._data_processing import display_total_result_test
     from ._data_processing import display_total_ten_fold_result
     from ._data_processing import clear_data_and_model
+    from ._balance_data import smote_smotenc
     from ._balance_data import smote_standard
     from ._balance_data import smote_svm
     from ._balance_data import smote_borderline
@@ -76,6 +78,7 @@ class SecondStrokePrediction:
     from ._feature_select import l1_feature_selection
     from ._feature_analyze import pca
     from ._feature_analyze import tsne
+    from ._model import dcnn_fit
     from ._model import k_means_fit
     from ._model import svm_linear_fit
     from ._model import svm_poly_fit

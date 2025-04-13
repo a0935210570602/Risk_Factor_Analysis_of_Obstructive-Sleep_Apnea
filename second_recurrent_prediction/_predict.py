@@ -194,3 +194,24 @@ def show_all_result(self):
     self.display_total_ten_fold_result()
     # self.plot_total_ROC_curve(is_train=True)
     # self.plot_total_ROC_curve(is_train=False)
+
+def predict_dcnn(self):
+    self.dcnn_fit()
+    name = 'DCNN'
+    train_title = f'{name} Trian'
+    test_title = f'{name} Test'
+    self.confusion_matrix(self.train_Y,self.dcnn_train_predicted,train_title)
+    self.confusion_matrix(self.test_Y,self.dcnn_test_predicted,test_title)
+    self.dcnn_train_auc, self.dcnn_train_fpr, self.dcnn_train_tpr = self.plot_ROC_curve(self.train_Y,self.forest_train_predicted_prob[:,1],train_title)
+    self.dcnn_test_auc, self.dcnn_test_fpr, self.dcnn_test_tpr = self.plot_ROC_curve(self.test_Y,self.forest_test_predicted_prob[:,1],test_title)
+    roc_curve_result_df = pd.DataFrame([
+        {'model': name, 'dataset': 'train', 'auc': self.dcnn_train_auc, 
+         'fpr': self.dcnn_train_fpr, 'tpr': self.dcnn_train_tpr},
+        {'model': name, 'dataset': 'test', 'auc': self.dcnn_test_auc, 
+         'fpr': self.dcnn_test_fpr, 'tpr': self.dcnn_test_tpr},
+    ])
+    self.roc_curve_result_df = pd.concat([self.roc_curve_result_df, roc_curve_result_df], ignore_index=True)
+
+    self.gen_result(self.forest_train_predicted, name, self.dcnn_train_auc)
+    self.gen_result(self.forest_test_predicted, name, self.dcnn_test_auc, is_train=False)
+    self.cross_validation(self.dcnn_model,name)

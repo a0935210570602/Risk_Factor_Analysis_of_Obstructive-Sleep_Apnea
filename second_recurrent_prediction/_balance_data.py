@@ -2,6 +2,54 @@
 from imblearn.over_sampling import SMOTE, BorderlineSMOTE, SVMSMOTE, ADASYN
 import pandas as pd
 
+# SMOTENC: 支援類別型特徵的 SMOTE（適合混合數值與類別資料）
+from imblearn.over_sampling import SMOTENC
+
+def smote_smotenc(self):
+    self.balance_config["name"] = "smote_smotenc"
+    random_state = self.balance_config.get("random_state", 42)
+    k_neighbors = self.balance_config.get("neighbors", 5)
+
+    # 根據你的 train_X 中的欄位，手動指定哪些是類別型欄位索引
+    # 假設 sex(0/1)、HTN、DM 等為類別變數
+    target_categorical_names = [
+        'sex',
+        'tPA(0/1)',
+        'EVT(0/1)',
+        'HTN(0/1)',
+        'DM(0/1)',
+        'Dyslipidemia(0/1)',
+        'Af(0/1)',
+        'smoking(Y/N/Q)'
+    ]
+
+    categorical_features = [
+        idx for idx, col in enumerate(self.train_X.columns)
+        if col in target_categorical_names
+    ]
+
+    # 印出原始標籤分布
+    print("原始資料標籤分布：")
+    print(pd.Series(self.train_Y).value_counts())
+
+    smotenc = SMOTENC(
+        categorical_features=categorical_features,
+        random_state=random_state,
+        k_neighbors=k_neighbors
+    )
+    self.train_X, self.train_Y = smotenc.fit_resample(self.train_X, self.train_Y)
+
+    # 印出平衡後標籤分布
+    print("SMOTENC 平衡後標籤分布：")
+    print(pd.Series(self.train_Y).value_counts())
+
+    self.balance_config["sample amount"] = {
+        "positive (1)": int((self.train_Y == 1).sum()),
+        "negative (0)": int((self.train_Y == 0).sum()),
+        "total": int(len(self.train_Y))
+    }
+
+
 # 標準SMOTE方法
 def smote_standard(self):
     self.balance_config["name"] = "smote_standard"

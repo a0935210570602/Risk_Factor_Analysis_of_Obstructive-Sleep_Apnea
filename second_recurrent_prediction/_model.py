@@ -85,6 +85,95 @@ def svm_linear_fit(self):
     print('linear測試集: ',self.linear_svc_model.score(self.test_X,self.test_Y))
     print('========================')
 
+# TODO: 這個模型還沒寫完
+def dcnn_fit(self):
+    import tensorflow as tf
+    from tensorflow import keras
+    
+    import numpy as np
+    X_train_balanced_reshaped = np.reshape(self.train_X.values, (-1, self.train_X.shape[1], 1))
+    models = keras.models
+    layers = keras.layers
+    # 建立 DCNN 模型
+    model = models.Sequential()
+    model.add(layers.Input(shape=(self.train_X.shape[1], 1)))
+
+    for _ in range(10):
+        model.add(layers.Conv1D(filters=32, kernel_size=4, activation='relu', padding='same'))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Dropout(0.3))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(15, activation='sigmoid'))  # 改用 relu 試試
+    model.add(layers.Dense(1, activation='sigmoid'))
+    self.dcnn_model = model
+    optimizer = tf.keras.optimizers.SGD(learning_rate=0.001, momentum=0.9)
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    self.dcnn_model.compile(optimizer,
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+    from keras import Sequential
+    class BalancedBatch(Sequential):
+        def __init__(self, X, y, batch_size=10):
+            self.X = X
+    #         self.y = y.reset_index(drop=True)  # 確保 index 是連續的
+            self.y = pd.Series(y)  # 轉換為 pandas Series
+
+            self.batch_size = batch_size
+            self.pos_indices = self.y[self.y == 1].index.to_numpy()
+            self.neg_indices = self.y[self.y == 0].index.to_numpy()
+            self.num_batches = min(len(self.pos_indices), len(self.neg_indices)) * 2 // batch_size
+            np.random.shuffle(self.pos_indices)
+            np.random.shuffle(self.neg_indices)
+
+        def __len__(self):
+            return self.num_batches
+
+        def __getitem__(self, idx):
+            half = self.batch_size // 2
+            start = idx * half
+            end = start + half
+
+            pos_idx = self.pos_indices[start:end]
+            neg_idx = self.neg_indices[start:end]
+
+            # 混合正負樣本
+            batch_indices = np.concatenate([pos_idx, neg_idx])
+            np.random.shuffle(batch_indices)
+
+            X_batch = self.X[batch_indices]
+            y_batch = self.y.iloc[batch_indices].to_numpy().reshape(-1, 1)
+
+            # print("✅ Batch y 分布:", np.bincount(y_batch.flatten()))
+            return X_batch, y_batch
+
+    y_train_balanced = self.train_Y.copy()
+    gen = BalancedBatch(X_train_balanced_reshaped, y_train_balanced, batch_size=10)
+
+    X_train_part, X_val, y_train_part, y_val = train_test_split(
+        X_train_balanced_reshaped, y_train_balanced, 
+        test_size=0.2, stratify=y_train_balanced, random_state=42)
+
+    # 模型改用 gen 作為資料輸入
+    self.dcnn_model.fit(
+        gen,
+        epochs=400,
+    #     validation_data=(X_val, y_val.to_numpy().reshape(-1, 1)),  # 這裡補上 validation 資料
+        validation_data=(X_val, y_val.reshape(-1, 1)),  # 這裡補上 validation 資料
+        verbose=1
+    )
+
+    # 使用訓練資料預測分類
+    self.dcnn_train_predicted = self.dcnn_model.predict(self.train_X)
+    self.dcnn_test_predicted = self.dcnn_model.predict(self.test_X)
+
+    self.dcnn_train_predicted_prob = self.dcnn_model.predict_proba(self.train_X)
+    self.dcnn_test_predicted_prob = self.dcnn_model.predict_proba(self.test_X)
+
+    # 計算準確率
+    print('訓練集: ',self.dcnn_model.score(self.train_X,self.train_Y))
+    print('測試集: ',self.dcnn_model.score(self.test_X,self.test_Y))
+
 def svm_poly_fit(self):
     # 建立 svm kernel = poly 模型
     self.poly_svc_model = svm.SVC(C=0.5, max_iter=3000,kernel='poly',probability=True)

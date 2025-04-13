@@ -4,6 +4,7 @@ import os
 from memory_profiler import profile
 from sklearn import model_selection, metrics
 from sklearn.discriminant_analysis import StandardScaler
+from sklearn.utils import shuffle
 
 def set_downsampling_rate(self, rate):
     self.data_config["down_sampling_rate"] = rate
@@ -55,7 +56,7 @@ def load_data(self):
     # 逐一取出各個變數
     data_path = self.data_config["path"]
     train_size = self.data_config["train_size"]
-    random_state = self.data_config["random_state"]
+    random_state = self.data_config.get("random_state", 42)
     
     self.data_df = pd.read_csv(data_path)
 
@@ -65,12 +66,14 @@ def load_data(self):
 
     down_sampling_rate = self.data_config.get("down_sampling_rate", 1.0)
     if down_sampling_rate < 1.0:
-        stroke_df = stroke_df.sample(frac=down_sampling_rate, random_state=random_state)
+        normal_df = normal_df.sample(frac=down_sampling_rate, random_state=random_state)
 
     self.normal_train_df, self.normal_test_df = model_selection.train_test_split(
-            normal_df, train_size=train_size, random_state=random_state)
+            normal_df, train_size=train_size, random_state=random_state, stratify=normal_df["Second_Stroke"])
     self.stroke_train_df, self.stroke_test_df = model_selection.train_test_split(
-            stroke_df, train_size=train_size, random_state=random_state)
+            stroke_df, train_size=train_size, random_state=random_state, stratify=stroke_df["Second_Stroke"])
+
+
 
     train_df = pd.concat([self.stroke_train_df, self.normal_train_df], axis = 0)
     test_df = pd.concat([self.stroke_test_df, self.normal_test_df], axis = 0)
@@ -78,16 +81,24 @@ def load_data(self):
     # 將資料隨機打亂並重設索引
     train_df = train_df.sample(frac=1, random_state=random_state).reset_index(drop=True)
     test_df = test_df.sample(frac=1, random_state=random_state).reset_index(drop=True)
-
+    
     # Select features of training & testing data
     self.train_X = train_df[self.SELECTED_FEATURE_LIST]
     self.train_Y = train_df[self.LABEL_NAME].values.ravel()
-
+    
     self.test_X = test_df[self.SELECTED_FEATURE_LIST]
     self.test_Y = test_df[self.LABEL_NAME].values.ravel()
 
     self.data_X = self.data_df[self.SELECTED_FEATURE_LIST]
     self.data_Y = self.data_df[self.LABEL_NAME].values.ravel()
+    # self.data_X = self.train_X.append(self.test_X, ignore_index=True)
+    # self.data_Y = self.train_Y.tolist() + self.test_Y.tolist()
+
+    # 印出原始標籤分布
+    print("原始資料標籤分布(train)：")
+    print(pd.Series(self.train_Y).value_counts())
+    print("原始資料標籤分布(test)：")
+    print(pd.Series(self.test_Y).value_counts())
 
 def standardize_data(self):
     # 資料標準化：先對訓練資料 fit_transform，再 transform 測試及全體資料
@@ -102,13 +113,23 @@ def standardize_data(self):
 # TODO
 # 10-fold
 def cross_validation(self, model, name):
-    global ten_fold_avg_std_df
+    from imblearn.pipeline import Pipeline
+    kind='borderline-1'
+    from imblearn.over_sampling import BorderlineSMOTE
 
+    smote = BorderlineSMOTE(random_state=42, k_neighbors=5, kind=kind)
 
-    # Perform 10-fold cross-validation
-    scores = model_selection.cross_validate(model, self.data_X, self.data_Y, cv=10,
-                            scoring=('accuracy', 'precision', 'recall', 'f1', 'roc_auc'),
-                            return_train_score=True)
+    # 包裝成管線：先 SMOTE 後訓練模型
+    pipeline = Pipeline([
+        ("smote", smote),
+        ("clf", model)
+    ])
+
+    scores = model_selection.cross_validate(
+        pipeline, self.data_X, self.data_Y,
+        cv=5,
+        scoring=('accuracy', 'precision', 'recall', 'f1', 'roc_auc'),
+    )
 
     # Convert the scores to a DataFrame
     df_score = pd.DataFrame(scores)
@@ -118,16 +139,16 @@ def cross_validation(self, model, name):
     std_scores = df_score.std()
 
     # Save the scores of each fold to a separate CSV file (overwrite if exists)
-    dir_path = os.path.join(self.PATH, '10-fold')
+    dir_path = os.path.join(self.PATH, '5-fold')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    file_path = os.path.join(dir_path, f'{name}_10-fold_scores.csv')
+    file_path = os.path.join(dir_path, f'{name}_5-fold_scores.csv')
     df_score.to_csv(file_path, index=False)
 
     # Generate DataFrame for average scores and standard deviations
     avg_result_df = pd.DataFrame({
         'Model name': [name],
-        'dataset': ['10-fold'],
+        'dataset': ['5-fold'],
         'accuracy_mean': [avg_scores['test_accuracy']],
         'accuracy_std': [std_scores['test_accuracy']],
         'precision_mean': [avg_scores['test_precision']],
@@ -136,6 +157,7 @@ def cross_validation(self, model, name):
         'recall_std': [std_scores['test_recall']],
         'f1-score_mean': [avg_scores['test_f1']],
         'f1-score_std': [std_scores['test_f1']],
+        'down_sampling_rate':[self.data_config["down_sampling_rate"]],
         'auc_mean': [avg_scores['test_roc_auc']],
         'auc_std': [std_scores['test_roc_auc']],
         'feature':[self.SELECTED_FEATURE_LIST],
@@ -143,18 +165,21 @@ def cross_validation(self, model, name):
         'feature_selection_config':[self.feature_selection_config],
     })
 
-    dir_path = os.path.join(self.PATH, '10-fold')
-    file_path = os.path.join(dir_path, 'all_models_10-fold-avg-std.csv')
+    dir_path = os.path.join(self.PATH, '5-fold')
+    file_path = os.path.join(dir_path, 'all_models_5-fold-avg-std.csv')
     if not os.path.isdir(dir_path):  # 確認儲存檔案位置 若沒有的話 則新建檔案
         os.makedirs(dir_path)
     # Update the global DataFrame (remove any previous entry for the same model)
-    if not self.ten_fold_avg_std_df.empty:
+    if os.path.exists(file_path):
         # print(self.ten_fold_avg_std_df.head(5))
         # print(avg_result_df.head(5))
-        self.ten_fold_avg_std_df = self.ten_fold_avg_std_df[self.ten_fold_avg_std_df['Model name'] != name]
-        self.ten_fold_avg_std_df = pd.concat([self.ten_fold_avg_std_df, avg_result_df], axis=0, ignore_index=True)
+        existing_df = pd.read_csv(file_path)
+        self.ten_fold_avg_std_df = pd.concat([existing_df, avg_result_df], ignore_index=True)
+        # self.ten_fold_avg_std_df = self.ten_fold_avg_std_df[self.ten_fold_avg_std_df['Model name'] != name]
+        # self.ten_fold_avg_std_df = pd.concat([self.ten_fold_avg_std_df, avg_result_df], axis=0, ignore_index=True)
     else:
         self.ten_fold_avg_std_df = avg_result_df.copy()
+
 
     # Save the average and standard deviation summary (overwrite if exists)
     self.ten_fold_avg_std_df.to_csv(file_path, index=False)
