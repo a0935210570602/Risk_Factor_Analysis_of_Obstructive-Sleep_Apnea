@@ -17,9 +17,13 @@ from sklearn.feature_selection import SelectKBest, chi2
 import xgboost as xgb
 
 def apply_feature_selection(self):
+    print("Feature Selection: ", self.SELECTED_FEATURE_LIST)
+    print(self.train_X.shape, self.train_Y.shape)
     self.train_X = self.train_X[self.SELECTED_FEATURE_LIST]
     self.test_X = self.test_X[self.SELECTED_FEATURE_LIST]
     self.data_X = self.data_X[self.SELECTED_FEATURE_LIST]
+
+    print(self.test_X.shape, self.test_Y.shape)
     
 def sfs_logistic_feature_selection(self):
     config = self.feature_selection_config

@@ -111,7 +111,7 @@ def predict_random_forest(self):
 
     self.gen_result(self.forest_train_predicted, name, self.random_forest_train_auc)
     self.gen_result(self.forest_test_predicted, name, self.random_forest_test_auc, is_train=False)
-    self.cross_validation(self.forest_model,name)
+    # self.cross_validation(self.forest_model,name)
 
     importance_list = self.forest_model.feature_importances_
     self.plot_feature_importance_bar_chart(importance_list, 'random_forest', name)

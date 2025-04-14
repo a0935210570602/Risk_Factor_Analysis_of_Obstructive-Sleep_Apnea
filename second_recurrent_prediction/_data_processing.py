@@ -50,9 +50,6 @@ def clear_data_and_model(self):
 
 # TESTED
 def load_data(self):
-    self.SELECTED_FEATURE_LIST = ['age', 'sex', 'HLOS', 'NIHSS', 'tPA(0/1)', 'EVT(0/1)',
-        'HTN(0/1)', 'DM(0/1)', 'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)',
-        'LDL ', 'cholesterol', 'TG', 'Cre', 'SGPT', 'HbA1c', 'MRS']
     # 逐一取出各個變數
     data_path = self.data_config["path"]
     train_size = self.data_config["train_size"]

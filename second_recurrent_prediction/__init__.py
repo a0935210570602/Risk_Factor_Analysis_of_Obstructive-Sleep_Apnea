@@ -13,7 +13,7 @@ class SecondStrokePrediction:
         'f1-score_mean', 'f1-score_std', 'auc_mean', 'auc_std','feature','balance_config','feature_selection_config']
     ROC_CURVE_RESULT_COLUMN = ['model', 'dataset', 'auc', 'fpr', 'tpr']
     RANDOM_SEED = 42
-    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "down_sampling_rate":None}
+    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "down_sampling_rate":1}
     balance_config = {"name": None, "sample amount": None, "random_state": 42, "neighbors": 5}
     feature_selection_config = {
         "name": None,
