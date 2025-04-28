@@ -254,7 +254,7 @@ def random_forest_fit(self):
     min_samples_leaf: 分完至少有多少資料才能分
     """
     #建立隨機森林 model
-    self.forest_model = RandomForestClassifier(criterion = 'entropy', n_estimators = 100, max_depth=5)
+    self.forest_model = RandomForestClassifier(criterion = 'entropy', n_estimators = 200, max_depth=None, min_samples_leaf=5, )
     forest_fit = self.forest_model.fit(self.train_X, self.train_Y)
 
     # 預測

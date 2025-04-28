@@ -98,14 +98,29 @@ def load_data(self):
     print(pd.Series(self.test_Y).value_counts())
 
 def standardize_data(self):
-    # 資料標準化：先對訓練資料 fit_transform，再 transform 測試及全體資料
+    # 1. 連續型與類別型欄位
+    self.continuous_features = ['age', 'HLOS', 'NIHSS', 'LDL ', 'cholesterol', 'TG', 'Cre', 'SGPT', 'HbA1c']
+    self.categorical_features = ['sex', 'tPA(0/1)', 'EVT(0/1)', 'HTN(0/1)', 'DM(0/1)', 'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)', 'MRS']
+    
+    # 2. 標準化連續特徵
     scaler = StandardScaler()
-    self.train_X = pd.DataFrame(scaler.fit_transform(self.train_X),
-                                columns=self.SELECTED_FEATURE_LIST)
-    self.test_X = pd.DataFrame(scaler.transform(self.test_X),
-                                columns=self.SELECTED_FEATURE_LIST)
-    self.data_X = pd.DataFrame(scaler.transform(self.data_X),
-                                columns=self.SELECTED_FEATURE_LIST)
+    self.scaler = scaler  # 儲存供未來用
+    self.train_X[self.continuous_features] = scaler.fit_transform(self.train_X[self.continuous_features])
+    self.test_X[self.continuous_features] = scaler.transform(self.test_X[self.continuous_features])
+    self.data_X[self.continuous_features] = scaler.transform(self.data_X[self.continuous_features])
+    # print(self.test_X.shape)
+    # print(self.test_X.loc[0])
+
+    # 3. One-Hot Encoding 離散特徵、如果使用 smoteNC則不需要
+    # self.train_X = pd.get_dummies(self.train_X, columns=self.categorical_features, drop_first=True)
+    # self.test_X = pd.get_dummies(self.test_X, columns=self.categorical_features, drop_first=True)
+    # self.data_X = pd.get_dummies(self.data_X, columns=self.categorical_features, drop_first=True)
+
+    # # 4. 確保 train/test/data 的欄位一致（以 train_X 為準補缺失欄位）
+    # self.test_X = self.test_X.reindex(columns=self.train_X.columns, fill_value=0)
+    # self.data_X = self.data_X.reindex(columns=self.train_X.columns, fill_value=0)
+    # print(self.test_X.shape)
+    # print(self.test_X.loc[0])
 
 # TODO
 # 10-fold

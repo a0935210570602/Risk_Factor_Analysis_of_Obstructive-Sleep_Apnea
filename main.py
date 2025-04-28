@@ -22,10 +22,10 @@ def single_experiment(args):
 
     try:
         model_prediction = SecondStrokePrediction(file_path)
+        model_prediction.set_downsampling_rate(down_sampling_rate)
         model_prediction.load_data()
         model_prediction.standardize_data()
 
-        model_prediction.set_downsampling_rate(down_sampling_rate)
         smote_method(model_prediction)
         feature_selection_method(model_prediction)
         prediction_method(model_prediction)

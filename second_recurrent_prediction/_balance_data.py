@@ -20,7 +20,8 @@ def smote_smotenc(self):
         'DM(0/1)',
         'Dyslipidemia(0/1)',
         'Af(0/1)',
-        'smoking(Y/N/Q)'
+        'smoking(Y/N/Q)',
+        'MRS'
     ]
 
     categorical_features = [
@@ -37,12 +38,21 @@ def smote_smotenc(self):
         random_state=random_state,
         k_neighbors=k_neighbors
     )
+
+    original_len = len(self.train_Y)
+
+    # 執行 SMOTENC
     self.train_X, self.train_Y = smotenc.fit_resample(self.train_X, self.train_Y)
 
     # 印出平衡後標籤分布
     print("SMOTENC 平衡後標籤分布：")
     print(pd.Series(self.train_Y).value_counts())
 
+    # 印出其中一筆合成後的樣本（例如第一筆新增樣本）
+    print(6666666)
+    print("✅ 合成樣本第 1 筆（位置：第 {} 筆）如下：".format(original_len))
+    print(self.train_X.iloc[original_len])
+    print("Label:", self.train_X.iloc[original_len-1])
     self.balance_config["sample amount"] = {
         "positive (1)": int((self.train_Y == 1).sum()),
         "negative (0)": int((self.train_Y == 0).sum()),
