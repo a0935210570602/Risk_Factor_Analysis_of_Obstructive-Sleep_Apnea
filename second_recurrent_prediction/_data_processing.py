@@ -151,21 +151,104 @@ from sklearn.metrics import roc_auc_score
 import pandas as pd
 
 def standardize(self):
-    if self.standardization_or_not:
-        scaler = StandardScaler()
-        self.X_train_scaled = scaler.fit_transform(self.train_X[self.continuous_features])
-        self.X_val_scaled = scaler.transform(self.valid_X[self.continuous_features])
+    """
+    如果 continuous_features 或 categorical_features 列表中的某些欄位在 train_X/valid_X
+    中不存在，就跳過那些欄位，只對剩下存在的欄位執行標準化/合併。
+    """
+    # 1. 如果物件沒有屬性 standardization_or_not 或其值為 False，就跳過
+    if not getattr(self, "standardization_or_not", False):
+        return
 
-        # 合併類別特徵
-        self.train_X= pd.concat([
-            pd.DataFrame(self.X_train_scaled, columns=self.continuous_features, index=self.train_X.index),
-            self.train_X[self.categorical_features]
-        ], axis=1)
-        self.valid_X= pd.concat([
-            pd.DataFrame(self.X_val_scaled, columns=self.continuous_features, index=self.valid_X.index),
-            self.valid_X[self.categorical_features]
-        ], axis=1)
-        
+    # 2. 確認 train_X 和 valid_X 存在
+    if not hasattr(self, "train_X") or not hasattr(self, "valid_X"):
+        return
+
+    # 3. 檢查 continuous_features 和 categorical_features 是否存在
+    cont_feats = getattr(self, "continuous_features", [])
+    cat_feats  = getattr(self, "categorical_features", [])
+
+    # 4. 找出 train_X/valid_X 中實際存在的欄位
+    existing_cont_train = [col for col in cont_feats if col in self.train_X.columns]
+    existing_cont_val   = [col for col in cont_feats if col in self.valid_X.columns]
+    existing_cat_train  = [col for col in cat_feats  if col in self.train_X.columns]
+    existing_cat_val    = [col for col in cat_feats  if col in self.valid_X.columns]
+
+    # 5. 如果連一個 continuous 欄位都沒有，就跳過標準化流程，只保留現有的 categorical_features
+    if not existing_cont_train or not existing_cont_val:
+        # 直接過濾 train_X 和 valid_X，只保留現有的 categorical_features
+        self.train_X = self.train_X[existing_cat_train].copy()
+        self.valid_X = self.valid_X[existing_cat_val].copy()
+        return
+
+    # 6. 執行標準化 (只對存在的 continuous 欄位做 fit/transform)
+    scaler = StandardScaler()
+    try:
+        # fit_transform train 的現有 continuous 欄位
+        X_train_cont_scaled = scaler.fit_transform(self.train_X[existing_cont_train])
+        # transform valid 的現有 continuous 欄位
+        X_val_cont_scaled   = scaler.transform(self.valid_X[existing_cont_val])
+
+        # 7. 把標準化後的 continuous 欄位轉回 DataFrame，並與存在的 categorical 欄位合併
+        df_train_cont = pd.DataFrame(
+            X_train_cont_scaled,
+            columns=existing_cont_train,
+            index=self.train_X.index
+        )
+        df_val_cont = pd.DataFrame(
+            X_val_cont_scaled,
+            columns=existing_cont_val,
+            index=self.valid_X.index
+        )
+
+        # 8. 如果 categorical 欄位存在，就一併合併；否則只回傳 continuous
+        if existing_cat_train:
+            self.train_X = pd.concat(
+                [df_train_cont, self.train_X[existing_cat_train]],
+                axis=1
+            )
+        else:
+            self.train_X = df_train_cont
+
+        if existing_cat_val:
+            self.valid_X = pd.concat(
+                [df_val_cont, self.valid_X[existing_cat_val]],
+                axis=1
+            )
+        else:
+            self.valid_X = df_val_cont
+
+    except Exception:
+        # 如果在標準化過程中發生任何錯誤，就跳過、不丟例外
+        return
+
+
+def dowmsample(self):
+    from sklearn.utils import shuffle
+
+    # 取出正負樣本
+    X_pos = self.train_X[self.train_Y == 1]
+    y_pos = self.train_Y[self.train_Y == 1]
+    X_neg = self.train_X[self.train_Y == 0]
+    y_neg = self.train_Y[self.train_Y == 0]
+
+    # 計算要保留多少負樣本數量
+    target_neg_count = int(len(y_pos) * 1.5)
+
+    # 隨機抽樣負樣本
+    X_neg_sampled = X_neg.sample(n=target_neg_count, random_state=42)
+    y_neg_sampled = y_neg.loc[X_neg_sampled.index]
+
+    # 合併正樣本與抽樣後的負樣本
+    self.train_X = pd.concat([X_pos, X_neg_sampled], axis=0)
+    self.train_Y = pd.concat([y_pos, y_neg_sampled], axis=0)
+
+    # 打亂
+    self.train_X, self.train_Y = shuffle(self.train_X, self.train_Y, random_state=42)
+
+    # 印出結果
+    print("✅ Downsample 後標籤分布：")
+    print(pd.Series(self.train_Y).value_counts())
+
 def cross_validation(self):
     results = []  # 儲存每 fold 的結果
 
@@ -179,13 +262,114 @@ def cross_validation(self):
         self.valid_Y = self.data_Y.iloc[val_idx].copy()
         # 🔍 列印資料筆數
         print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
-        
+        self.fold = fold_id + 1  # 設定當前 fold 編號
         standardize(self)
-        feature_selection_method(self)
         smote_method(self)
+        dowmsample(self)
+        feature_selection_method(self)
 
         # 訓練與預測
         self.prediction_method(self)
+    # append_average_to_existing(self)
+
+import os
+import pandas as pd
+
+def append_average_to_existing(self):
+    """
+    讀取已有的 train_<filename>.csv / test_<filename>.csv（裡面已有 10 折每折的紀錄），
+    計算每個 Model name 的平均值，然後把平均值那一列 append 到原檔案底下並覆寫。
+    """
+
+    # 1. 先把資料檔名（例如 age_below_65.csv）拆出主檔名
+    filename = os.path.basename(self.data_config["path"])
+    name_without_ext, _ = os.path.splitext(filename)
+
+    # 2. 處理 train 的檔案
+    train_dir  = os.path.join(self.PATH, "train")
+    train_path = os.path.join(train_dir, f"train_{name_without_ext}.csv")
+    if os.path.exists(train_path):
+        # 2.1 讀取原本 10 折的 train 紀錄（10 行 + 可能其他 model）
+        df_train = pd.read_csv(train_path)
+
+        # 2.2 計算每個 Model name 在 10 折上的平均
+        agg_cols = ["accuracy", "precision", "recall", "f1‐score", "auc"]
+        # groupby 後針對上面欄位做 mean
+        df_avg = (
+            df_train
+            .groupby("Model name")[agg_cols]
+            .mean()
+            .round(2)
+            .reset_index()
+        )
+
+        # 2.3 取出每個 model 對應的「其它欄位」（feature、balance_config、downsampling_rate、feature_selection_config）來當輔助，
+        #     用 groupby.first() 把這些欄位的第一筆值抓出來（因為同一個 model 在每折的這些欄位其實都一樣）
+        extras = (
+            df_train
+            .groupby("Model name")[["feature", "balance_config", "downsampling_rate", "feature_selection_config"]]
+            .first()
+            .reset_index()
+        )
+
+        # 2.4 把 extras 與 df_avg merge 起來，並加上 dataset="train"、Fold="avg"
+        df_avg = pd.merge(extras, df_avg, on="Model name", how="left")
+        df_avg["dataset"] = "train"
+        df_avg["Fold"]    = "avg"  # 或 "average"
+
+        # 2.5 重新排列欄位順序，對應到原本 df_train 的順序：
+        #     ['Model name', 'Fold', 'dataset', 'accuracy', 'precision', 'recall', 'f1‐score', 'auc',
+        #      'feature', 'balance_config', 'downsampling_rate', 'feature_selection_config']
+        cols_order = [
+            "Model name", "Fold", "dataset",
+            "accuracy", "precision", "recall", "f1‐score", "auc",
+            "feature", "balance_config", "downsampling_rate", "feature_selection_config"
+        ]
+        df_avg = df_avg[cols_order]
+
+        # 2.6 把原本 df_train 和 df_avg 合併，再覆寫回 train_path
+        df_combined = pd.concat([df_train, df_avg], ignore_index=True)
+        df_combined.to_csv(train_path, index=False)
+        print(f"已把 train 平均值追加到：{train_path}")
+    else:
+        print(f"[警告] 找不到 train 檔案：{train_path}，無法追加平均值。")
+
+    # 3. 處理 test 的檔案（步驟與 train 幾乎一樣）
+    test_dir  = os.path.join(self.PATH, "test")
+    test_path = os.path.join(test_dir, f"test_{name_without_ext}.csv")
+    if os.path.exists(test_path):
+        df_test = pd.read_csv(test_path)
+
+        agg_cols = ["accuracy", "precision", "recall", "f1‐score", "auc"]
+        df_avg_test = (
+            df_test
+            .groupby("Model name")[agg_cols]
+            .mean()
+            .round(2)
+            .reset_index()
+        )
+        extras_test = (
+            df_test
+            .groupby("Model name")[["feature", "balance_config", "downsampling_rate", "feature_selection_config"]]
+            .first()
+            .reset_index()
+        )
+
+        df_avg_test = pd.merge(extras_test, df_avg_test, on="Model name", how="left")
+        df_avg_test["dataset"] = "test"
+        df_avg_test["Fold"]    = "avg"
+        cols_order = [
+            "Model name", "Fold", "dataset",
+            "accuracy", "precision", "recall", "f1‐score", "auc",
+            "feature", "balance_config", "downsampling_rate", "feature_selection_config"
+        ]
+        df_avg_test = df_avg_test[cols_order]
+
+        df_combined_test = pd.concat([df_test, df_avg_test], ignore_index=True)
+        df_combined_test.to_csv(test_path, index=False)
+        print(f"已把 test 平均值追加到：{test_path}")
+    else:
+        print(f"[警告] 找不到 test 檔案：{test_path}，無法追加平均值。")
 
     # # 合併所有 fold 的結果
     # self.cross_val_results = pd.DataFrame(results)

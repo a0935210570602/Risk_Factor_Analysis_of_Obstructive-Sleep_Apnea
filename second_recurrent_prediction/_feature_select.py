@@ -97,7 +97,6 @@ def sfs_random_forest_feature_selection(self):
     X, y = self.train_X, self.train_Y
     best_score = -np.inf
     best_params = {}
-    print(9999999)
     # 3. Grid Search
     for direction in directions:
         for n_feat in n_features_list:

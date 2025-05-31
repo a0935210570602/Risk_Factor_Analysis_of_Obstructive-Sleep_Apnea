@@ -22,9 +22,6 @@ def predict_svm_linear(self):
     self.roc_curve_result_df = pd.concat([self.roc_curve_result_df, roc_curve_result_df], ignore_index=True)
     self.gen_result(self.linear_train_predicted, name, self.svm_linear_train_auc)
     self.gen_result(self.linear_valid_predicted, name, self.svm_linear_test_auc, is_train=False)
-    # print(99999999999)
-
-    # self.cross_validation(self.linear_svc_model,name)
 
 def predict_svm_poly(self):
     self.svm_poly_fit()
@@ -45,7 +42,6 @@ def predict_svm_poly(self):
 
     self.gen_result(self.poly_train_predicted ,name, self.svm_poly_train_auc)
     self.gen_result(self.poly_test_predicted ,name, self.svm_poly_test_auc, is_train=False)
-    self.cross_validation(self.poly_svc_model,name)
 
 def predict_svm_rbf(self):
     self.svm_rbf_fit()
@@ -66,7 +62,6 @@ def predict_svm_rbf(self):
 
     self.gen_result(self.rbf_train_predicted ,name,self.svm_rbf_train_auc)
     self.gen_result(self.rbf_test_predicted ,name,self.svm_rbf_test_auc, is_train=False)
-    self.cross_validation(self.rbf_svc_model,name)
 
 def predict_decision_tree(self):
     self.decision_tree_fit()
@@ -90,7 +85,6 @@ def predict_decision_tree(self):
 
     self.gen_result(self.decision_train_predicted ,name,self.decision_tree_train_auc)
     self.gen_result(self.decision_test_predicted ,name,self.decision_tree_test_auc, is_train=False)
-    self.cross_validation(self.decision_tree_model,name)
 
     importance_list = self.decision_tree_model.feature_importances_
     self.plot_feature_importance_bar_chart(importance_list, 'decision_tree', name)
@@ -115,7 +109,6 @@ def predict_random_forest(self):
 
     self.gen_result(self.forest_train_predicted, name, self.random_forest_train_auc)
     self.gen_result(self.forest_test_predicted, name, self.random_forest_test_auc, is_train=False)
-    # self.cross_validation(self.forest_model,name)
 
     importance_list = self.forest_model.feature_importances_
     self.plot_feature_importance_bar_chart(importance_list, 'random_forest', name)
@@ -140,7 +133,6 @@ def predict_xgboost(self):
 
     self.gen_result(self.xgboost_train_predicted, name, self.xgboost_train_auc)
     self.gen_result(self.xgboost_test_predicted ,name, self.xgboost_test_auc, is_train=False)
-    self.cross_validation(self.xgboost_model,name)
 
     self.plot_xgboost_feature_importance()
 
@@ -163,7 +155,6 @@ def predict_adaboost(self):
 
     self.gen_result(self.adaboost_train_predicted, name, self.adaboost_train_auc)
     self.gen_result(self.adaboost_test_predicted, name, self.adaboost_test_auc, is_train=False)
-    self.cross_validation(self.adaboost_model, name)
 
     importance_list = self.adaboost_model.feature_importances_
     self.plot_feature_importance_bar_chart(importance_list, 'adaboost', name)
@@ -187,7 +178,6 @@ def predict_gradient_boost(self):
 
     self.gen_result(self.grad_boost_train_predicted, name, self.grad_boost_train_auc)
     self.gen_result(self.grad_boost_test_predicted, name, self.grad_boost_test_auc, is_train=False)
-    self.cross_validation(self.grad_boost_model,name)
 
     importance_list = self.grad_boost_model.feature_importances_
     self.plot_feature_importance_bar_chart(importance_list, 'gradien_boost', name)
@@ -218,4 +208,3 @@ def predict_dcnn(self):
 
     self.gen_result(self.forest_train_predicted, name, self.dcnn_train_auc)
     self.gen_result(self.forest_test_predicted, name, self.dcnn_test_auc, is_train=False)
-    self.cross_validation(self.dcnn_model,name)

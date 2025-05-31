@@ -32,8 +32,10 @@ def smote_smotenc(self):
     # 印出原始標籤分布
     print("原始資料標籤分布：")
     print(pd.Series(self.train_Y).value_counts())
-
+    positive_count = (self.train_Y == 1).sum()
+    target_count = positive_count*2 
     smotenc = SMOTENC(
+        sampling_strategy={1: target_count},
         categorical_features=categorical_features,
         random_state=random_state,
         k_neighbors=k_neighbors
@@ -69,8 +71,9 @@ def smote_standard(self):
     # 印出原始標籤分布
     print("原始資料標籤分布：")
     print(pd.Series(self.train_Y).value_counts())
-
-    smote = SMOTE(random_state=random_state, k_neighbors=k_neighbors)
+    positive_count = (self.train_Y == 1).sum()
+    target_count = positive_count*2 
+    smote = SMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = smote.fit_resample(self.train_X, self.train_Y)
 
     # 印出平衡後標籤分布
@@ -94,7 +97,9 @@ def smote_borderline(self):
 
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
-    borderline_smote = BorderlineSMOTE(random_state=random_state, k_neighbors=k_neighbors, kind=kind)
+    positive_count = (self.train_Y == 1).sum()
+    target_count = positive_count*2 
+    borderline_smote = BorderlineSMOTE(random_state=random_state, k_neighbors=k_neighbors, kind=kind,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = borderline_smote.fit_resample(self.train_X, self.train_Y)
 
     # 印出平衡後標籤分布
@@ -111,7 +116,9 @@ def smote_svm(self):
     self.balance_config["name"] = "smote_svm"
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
-    svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors)
+    positive_count = (self.train_Y == 1).sum()
+    target_count = positive_count*2 
+    svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = svm_smote.fit_resample(self.train_X, self.train_Y)
     self.balance_config["sample amount"] = {
         "positive (1)": int((self.train_Y == 1).sum()),
@@ -124,7 +131,9 @@ def smote_adasyn(self):
     self.balance_config["name"] = "smote_adasyn"
     random_state = self.balance_config.get("random_state", 42)
     n_neighbors = self.balance_config.get("neighbors", 5)
-    adasyn = ADASYN(random_state=random_state, n_neighbors=n_neighbors)
+    positive_count = (self.train_Y == 1).sum()
+    target_count = positive_count*2 
+    adasyn = ADASYN(random_state=random_state, n_neighbors=n_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y =  adasyn.fit_resample(self.train_X, self.train_Y)
     self.balance_config["sample amount"] = {
         "positive (1)": int((self.train_Y == 1).sum()),

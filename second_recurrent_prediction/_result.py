@@ -13,6 +13,7 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
 
     df = pd.DataFrame({
         'Model name': [name],
+        'Fold': [self.fold],
         'dataset': [label],
         'accuracy': [accuracy],
         'precision': [precision],
