@@ -17,13 +17,14 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectKBest, chi2
 import xgboost as xgb
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, message="resource_tracker: .*")
 
 def apply_feature_selection(self):
     print("Feature Selection: ", self.SELECTED_FEATURE_LIST)
     print(self.train_X.shape, self.train_Y.shape)
     self.train_X = self.train_X[self.SELECTED_FEATURE_LIST]
     self.valid_X = self.valid_X[self.SELECTED_FEATURE_LIST]
-    self.data_X = self.data_X[self.SELECTED_FEATURE_LIST]
 
     print(self.valid_X.shape, self.valid_Y.shape)
     
@@ -81,13 +82,7 @@ def sfs_knn_feature_selection(self):
     apply_feature_selection(self)
 
 def sfs_random_forest_feature_selection(self):
-    self.train_X = pd.get_dummies(self.train_X, columns=self.categorical_features, drop_first=True)
-    self.valid_X = pd.get_dummies(self.valid_X, columns=self.categorical_features, drop_first=True)
-    self.data_X = pd.get_dummies(self.data_X, columns=self.categorical_features, drop_first=True)
-
-    # 4. 確保 train/test/data 的欄位一致（以 train_X 為準補缺失欄位）
-    self.valid_X = self.valid_X.reindex(columns=self.train_X.columns, fill_value=0)
-    self.data_X = self.data_X.reindex(columns=self.train_X.columns, fill_value=0)
+    print("🚀 Running SFS with Random Forest Feature Selection...")
 
     # 1. 讀取設定
     config = self.feature_selection_config
@@ -95,14 +90,14 @@ def sfs_random_forest_feature_selection(self):
     
     # 2. 參數空間 (可從 config 裡讀，也可直接在這裡改)
     directions = config.get("grid_directions", [ "backward"])
-    n_features_list = config.get("grid_n_features_to_select", [10])
+    n_features_list = config.get("grid_n_features_to_select", [8])
     n_estimators_list = config.get("grid_n_estimators", [100])
     cv = config.get("cv", 5)
     
     X, y = self.train_X, self.train_Y
     best_score = -np.inf
     best_params = {}
-    
+    print(9999999)
     # 3. Grid Search
     for direction in directions:
         for n_feat in n_features_list:
@@ -116,7 +111,7 @@ def sfs_random_forest_feature_selection(self):
                     direction=direction,
                     scoring="f1",
                     cv=cv,
-                    n_jobs=-1
+                    n_jobs=1
                 )
                 # 先挑特徵
                 sfs.fit(X, y)
@@ -150,7 +145,7 @@ def sfs_random_forest_feature_selection(self):
         direction=best_params["direction"],
         scoring="f1",
         cv=cv,
-        n_jobs=-1
+        n_jobs=1
     )
     sfs.fit(X, y)
     

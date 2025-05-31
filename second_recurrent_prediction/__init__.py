@@ -59,6 +59,7 @@ class SecondStrokePrediction:
     from ._data_processing import apply_standardization
     from ._data_processing import set_downsampling_rate
     from ._data_processing import set_smote_method
+    from ._data_processing import set_feature_selection_method
     # from ._data_processing import standardize_data
     from ._data_processing import cross_validation
     from ._data_processing import prepare_tenfold_data

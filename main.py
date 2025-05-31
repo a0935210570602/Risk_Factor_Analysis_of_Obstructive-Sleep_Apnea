@@ -24,11 +24,12 @@ def single_experiment(args):
         model_prediction = SecondStrokePrediction(file_path)
         model_prediction.load_data()
         model_prediction.prepare_tenfold_data()
-        
+
+        model_prediction.set_feature_selection_method(feature_selection_method)
         model_prediction.apply_standardization()
         model_prediction.set_smote_method(smote_method)
-        model_prediction.set_prediction_model(prediction_method)
 
+        model_prediction.set_prediction_model(prediction_method)
         # feature_selection_method(model_prediction)
         model_prediction.cross_validation()
     finally:

@@ -12,6 +12,13 @@ def apply_standardization(self):
 def set_smote_method(self, smote_method):
     self.smote_method = smote_method
 
+def set_feature_selection_method(self, feature_selection_method):
+    self.feature_selection_method = feature_selection_method
+
+def feature_selection_method(self):
+    self.feature_selection_method(self)
+    # pass
+
 def smote_method(self):
     self.smote_method(self)
 
@@ -116,8 +123,8 @@ def load_data(self):
                                  'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)', 'MRS']
 
     # 合併 X 與 y
-    self.X = self.data_df[self.continuous_features + self.categorical_features]
-    self.y = self.data_df["Second_Stroke"]
+    self.data_X = self.data_df[self.continuous_features + self.categorical_features]
+    self.data_Y = self.data_df["Second_Stroke"]
 
 def prepare_tenfold_data(self):
     # 分成正負樣本
@@ -166,15 +173,16 @@ def cross_validation(self):
         print(f"🔁 Fold {fold_id + 1}/10")
 
         # 抓出資料
-        self.train_X = self.X.iloc[train_idx]
-        self.train_Y = self.y.iloc[train_idx]
-        self.valid_X= self.X.iloc[val_idx]
-        self.valid_Y = self.y.iloc[val_idx]
+        self.train_X = self.data_X.iloc[train_idx].copy()
+        self.train_Y = self.data_Y.iloc[train_idx].copy()
+        self.valid_X= self.data_X.iloc[val_idx].copy()
+        self.valid_Y = self.data_Y.iloc[val_idx].copy()
         # 🔍 列印資料筆數
         print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
         
-        smote_method(self)
         standardize(self)
+        feature_selection_method(self)
+        smote_method(self)
 
         # 訓練與預測
         self.prediction_method(self)
