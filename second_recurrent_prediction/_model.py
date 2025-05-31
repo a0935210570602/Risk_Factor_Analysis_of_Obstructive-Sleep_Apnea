@@ -74,15 +74,15 @@ def svm_linear_fit(self):
     self.linear_svc_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
     self.linear_train_predicted=self.linear_svc_model.predict(self.train_X)
-    self.linear_test_predicted=self.linear_svc_model.predict(self.test_X)
+    self.linear_valid_predicted=self.linear_svc_model.predict(self.valid_X)
 
     # 使用訓練資料預測機率
     self.linear_train_predicted_prob =self.linear_svc_model.predict_proba(self.train_X)
-    self.linear_test_predicted_prob =self.linear_svc_model.predict_proba(self.test_X)
+    self.linear_valid_predicted_prob =self.linear_svc_model.predict_proba(self.valid_X)
 
     # 計算準確率
     print('linear訓練集: ',self.linear_svc_model.score(self.train_X,self.train_Y))
-    print('linear測試集: ',self.linear_svc_model.score(self.test_X,self.test_Y))
+    print('linear測試集: ',self.linear_svc_model.score(self.valid_X,self.valid_Y))
     print('========================')
 
 # TODO: 這個模型還沒寫完
@@ -165,14 +165,14 @@ def dcnn_fit(self):
 
     # 使用訓練資料預測分類
     self.dcnn_train_predicted = self.dcnn_model.predict(self.train_X)
-    self.dcnn_test_predicted = self.dcnn_model.predict(self.test_X)
+    self.dcnn_test_predicted = self.dcnn_model.predict(self.valid_X)
 
     self.dcnn_train_predicted_prob = self.dcnn_model.predict_proba(self.train_X)
-    self.dcnn_test_predicted_prob = self.dcnn_model.predict_proba(self.test_X)
+    self.dcnn_test_predicted_prob = self.dcnn_model.predict_proba(self.valid_X)
 
     # 計算準確率
     print('訓練集: ',self.dcnn_model.score(self.train_X,self.train_Y))
-    print('測試集: ',self.dcnn_model.score(self.test_X,self.test_Y))
+    print('測試集: ',self.dcnn_model.score(self.valid_X,self.valid_Y))
 
 def svm_poly_fit(self):
     # 建立 svm kernel = poly 模型
@@ -181,10 +181,10 @@ def svm_poly_fit(self):
     self.poly_svc_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
     self.poly_train_predicted = self.poly_svc_model.predict(self.train_X)
-    self.poly_test_predicted = self.poly_svc_model.predict(self.test_X)
+    self.poly_test_predicted = self.poly_svc_model.predict(self.valid_X)
 
     self.poly_train_predicted_prob = self.poly_svc_model.predict_proba(self.train_X)
-    self.poly_test_predicted_prob = self.poly_svc_model.predict_proba(self.test_X)
+    self.poly_test_predicted_prob = self.poly_svc_model.predict_proba(self.valid_X)
 
 def svm_rbf_fit(self):
     self.rbf_svc_model = svm.SVC(C=0.5, max_iter=3000,kernel='rbf',probability=True)
@@ -192,14 +192,14 @@ def svm_rbf_fit(self):
     self.rbf_svc_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
     self.rbf_train_predicted = self.rbf_svc_model.predict(self.train_X)
-    self.rbf_test_predicted = self.rbf_svc_model.predict(self.test_X)
+    self.rbf_test_predicted = self.rbf_svc_model.predict(self.valid_X)
 
     self.rbf_train_predicted_prob = self.rbf_svc_model.predict_proba(self.train_X)
-    self.rbf_test_predicted_prob = self.rbf_svc_model.predict_proba(self.test_X)
+    self.rbf_test_predicted_prob = self.rbf_svc_model.predict_proba(self.valid_X)
 
     # 計算準確率
     print('rbf訓練集: ',self.rbf_svc_model.score(self.train_X,self.train_Y))
-    print('rbf測試集: ',self.rbf_svc_model.score(self.test_X,self.test_Y))
+    print('rbf測試集: ',self.rbf_svc_model.score(self.valid_X,self.valid_Y))
     print('========================')
 
 def decision_tree_fit(self):
@@ -226,14 +226,14 @@ def decision_tree_fit(self):
     self.decision_tree_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
     self.decision_train_predicted = self.decision_tree_model.predict(self.train_X)
-    self.decision_test_predicted = self.decision_tree_model.predict(self.test_X)
+    self.decision_test_predicted = self.decision_tree_model.predict(self.valid_X)
 
     self.decision_train_predicted_prob = self.decision_tree_model.predict_proba(self.train_X)
-    self.decision_test_predicted_prob = self.decision_tree_model.predict_proba(self.test_X)
+    self.decision_test_predicted_prob = self.decision_tree_model.predict_proba(self.valid_X)
 
     # 計算準確率
     print('訓練集: ',self.decision_tree_model.score(self.train_X,self.train_Y))
-    print('測試集: ',self.decision_tree_model.score(self.test_X,self.test_Y))
+    print('測試集: ',self.decision_tree_model.score(self.valid_X,self.valid_Y))
 
 def random_forest_fit(self):
     """
@@ -259,14 +259,14 @@ def random_forest_fit(self):
 
     # 預測
     self.forest_train_predicted = self.forest_model.predict(self.train_X)
-    self.forest_test_predicted = self.forest_model.predict(self.test_X)
+    self.forest_test_predicted = self.forest_model.predict(self.valid_X)
 
     self.forest_train_predicted_prob = self.forest_model.predict_proba(self.train_X)
-    self.forest_test_predicted_prob = self.forest_model.predict_proba(self.test_X)
+    self.forest_test_predicted_prob = self.forest_model.predict_proba(self.valid_X)
 
     # 預測成功的比例
     print('訓練集: ',self.forest_model.score(self.train_X,self.train_Y))
-    print('測試集: ',self.forest_model.score(self.test_X,self.test_Y))
+    print('測試集: ',self.forest_model.score(self.valid_X,self.valid_Y))
 
 def xgboost_fit(self):
     # 建立 XGBClassifier 模型
@@ -291,26 +291,26 @@ def xgboost_fit(self):
     self.xgboost_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
     self.xgboost_train_predicted = self.xgboost_model.predict(self.train_X)
-    self.xgboost_test_predicted = self.xgboost_model.predict(self.test_X)
+    self.xgboost_test_predicted = self.xgboost_model.predict(self.valid_X)
 
     self.xgboost_train_predicted_prob = self.xgboost_model.predict_proba(self.train_X)
-    self.xgboost_test_predicted_prob = self.xgboost_model.predict_proba(self.test_X)
+    self.xgboost_test_predicted_prob = self.xgboost_model.predict_proba(self.valid_X)
 
     print('訓練集: ',self.xgboost_model.score(self.train_X,self.train_Y))
-    print('測試集: ',self.xgboost_model.score(self.test_X,self.test_Y))
+    print('測試集: ',self.xgboost_model.score(self.valid_X,self.valid_Y))
 
 def adaboost_fit(self):
     self.adaboost_model = AdaBoostClassifier(n_estimators = 300)
     self.adaboost_model.fit(self.train_X,self.train_Y)
 
     self.adaboost_train_predicted = self.adaboost_model.predict(self.train_X)
-    self.adaboost_test_predicted = self.adaboost_model.predict(self.test_X)
+    self.adaboost_test_predicted = self.adaboost_model.predict(self.valid_X)
 
     self.adaboost_ada_train_predicted_prob = self.adaboost_model.predict_proba(self.train_X)
-    self.adaboost_test_predicted_prob = self.adaboost_model.predict_proba(self.test_X)
+    self.adaboost_test_predicted_prob = self.adaboost_model.predict_proba(self.valid_X)
 
     print("訓練集 Score: ", self.adaboost_model.score(self.train_X,self.train_Y))
-    print("測試集 Score: ", self.adaboost_model.score(self.test_X,self.test_Y))
+    print("測試集 Score: ", self.adaboost_model.score(self.valid_X,self.valid_Y))
 
 def gradient_boost_fit(self):
     # Initialize and train GradientBoostingClassifier
@@ -319,12 +319,12 @@ def gradient_boost_fit(self):
 
     # Make predictions
     self.grad_boost_train_predicted = self.grad_boost_model.predict(self.train_X)
-    self.grad_boost_test_predicted = self.grad_boost_model.predict(self.test_X)
+    self.grad_boost_test_predicted = self.grad_boost_model.predict(self.valid_X)
 
     # predict_proba for class probabilities
     self.grad_boost_train_predicted_prob = self.grad_boost_model.predict_proba(self.train_X)
-    self.grad_boost_test_predicted_prob = self.grad_boost_model.predict_proba(self.test_X)
+    self.grad_boost_test_predicted_prob = self.grad_boost_model.predict_proba(self.valid_X)
 
     # Print scores
     print("Training Set Score:", accuracy_score(self.train_Y, self.grad_boost_train_predicted))
-    print("Testing Set Score:", accuracy_score(self.test_Y, self.grad_boost_test_predicted))
+    print("Testing Set Score:", accuracy_score(self.valid_Y, self.grad_boost_test_predicted))

@@ -22,10 +22,10 @@ def apply_feature_selection(self):
     print("Feature Selection: ", self.SELECTED_FEATURE_LIST)
     print(self.train_X.shape, self.train_Y.shape)
     self.train_X = self.train_X[self.SELECTED_FEATURE_LIST]
-    self.test_X = self.test_X[self.SELECTED_FEATURE_LIST]
+    self.valid_X = self.valid_X[self.SELECTED_FEATURE_LIST]
     self.data_X = self.data_X[self.SELECTED_FEATURE_LIST]
 
-    print(self.test_X.shape, self.test_Y.shape)
+    print(self.valid_X.shape, self.valid_Y.shape)
     
 def sfs_logistic_feature_selection(self):
     config = self.feature_selection_config
@@ -82,11 +82,11 @@ def sfs_knn_feature_selection(self):
 
 def sfs_random_forest_feature_selection(self):
     self.train_X = pd.get_dummies(self.train_X, columns=self.categorical_features, drop_first=True)
-    self.test_X = pd.get_dummies(self.test_X, columns=self.categorical_features, drop_first=True)
+    self.valid_X = pd.get_dummies(self.valid_X, columns=self.categorical_features, drop_first=True)
     self.data_X = pd.get_dummies(self.data_X, columns=self.categorical_features, drop_first=True)
 
     # 4. 確保 train/test/data 的欄位一致（以 train_X 為準補缺失欄位）
-    self.test_X = self.test_X.reindex(columns=self.train_X.columns, fill_value=0)
+    self.valid_X = self.valid_X.reindex(columns=self.train_X.columns, fill_value=0)
     self.data_X = self.data_X.reindex(columns=self.train_X.columns, fill_value=0)
 
     # 1. 讀取設定
@@ -161,7 +161,7 @@ def sfs_random_forest_feature_selection(self):
     
 # def sfs_random_forest_feature_selection(self):
 #     self.train_X = pd.get_dummies(self.train_X, columns=self.categorical_features, drop_first=True)
-#     self.test_X = pd.get_dummies(self.test_X, columns=self.categorical_features, drop_first=True)
+#     self.valid_X = pd.get_dummies(self.valid_X, columns=self.categorical_features, drop_first=True)
 #     self.data_X = pd.get_dummies(self.data_X, columns=self.categorical_features, drop_first=True)
 
 #     config = self.feature_selection_config

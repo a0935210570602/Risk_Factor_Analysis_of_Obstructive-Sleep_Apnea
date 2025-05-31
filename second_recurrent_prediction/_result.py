@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn import metrics
 
 def gen_result(self, pred_y, name, train_auc, is_train=True):
-    true_y = self.train_Y if is_train else self.test_Y
+    true_y = self.train_Y if is_train else self.valid_Y
     label = 'train' if is_train else 'test'
     accuracy = round(metrics.accuracy_score(true_y, pred_y), 2)
     precision = round(metrics.precision_score(true_y, pred_y), 2)

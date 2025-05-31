@@ -1,36 +1,40 @@
 import pandas as pd
+from sklearn.discriminant_analysis import StandardScaler
+
+def set_prediction_model(self, prediction_method):
+    self.prediction_method = prediction_method
 
 def predict_svm_linear(self):
     self.svm_linear_fit()
     name = 'SVM Linear'
     train_title = f'{name} Train'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Valid'
     self.confusion_matrix(self.train_Y, self.linear_train_predicted, train_title)
-    self.confusion_matrix(self.test_Y, self.linear_test_predicted, test_title)
+    self.confusion_matrix(self.valid_Y, self.linear_valid_predicted, valid_title)
     self.svm_linear_train_auc,self.svm_linear_train_fpr, self.svm_linear_train_tpr = self.plot_ROC_curve(self.train_Y, self.linear_train_predicted_prob[:,1], train_title)
-    self.svm_linear_test_auc,self.svm_linear_test_fpr, self.svm_linear_test_tpr = self.plot_ROC_curve(self.test_Y, self.linear_test_predicted_prob[:,1], test_title)
+    self.svm_linear_test_auc,self.svm_linear_test_fpr, self.svm_linear_test_tpr = self.plot_ROC_curve(self.valid_Y, self.linear_valid_predicted_prob[:,1], valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.svm_linear_train_auc, 
          'fpr': self.svm_linear_train_fpr, 'tpr': self.svm_linear_train_tpr},
-        {'model': name, 'dataset': 'test', 'auc': self.svm_linear_test_auc, 
+        {'model': name, 'dataset': 'valid', 'auc': self.svm_linear_test_auc, 
          'fpr': self.svm_linear_test_fpr, 'tpr': self.svm_linear_test_tpr},
     ])
     self.roc_curve_result_df = pd.concat([self.roc_curve_result_df, roc_curve_result_df], ignore_index=True)
     self.gen_result(self.linear_train_predicted, name, self.svm_linear_train_auc)
-    self.gen_result(self.linear_test_predicted, name, self.svm_linear_test_auc, is_train=False)
-    print(99999999999)
+    self.gen_result(self.linear_valid_predicted, name, self.svm_linear_test_auc, is_train=False)
+    # print(99999999999)
 
-    self.cross_validation(self.linear_svc_model,name)
+    # self.cross_validation(self.linear_svc_model,name)
 
 def predict_svm_poly(self):
     self.svm_poly_fit()
     name = 'SVM Poly'
     train_title = f'{name} Train'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y, self.poly_train_predicted, train_title)
-    self.confusion_matrix(self.test_Y, self.poly_test_predicted, test_title)
+    self.confusion_matrix(self.valid_Y, self.poly_test_predicted, valid_title)
     self.svm_poly_train_auc, self.svm_poly_train_fpr, self.svm_poly_train_tpr = self.plot_ROC_curve(self.train_Y, self.poly_train_predicted_prob[:,1].reshape(-1,1), train_title)
-    self.svm_poly_test_auc, self.svm_poly_test_fpr, self.svm_poly_test_tpr = self.plot_ROC_curve(self.test_Y, self.poly_test_predicted_prob[:,1].reshape(-1,1), test_title)
+    self.svm_poly_test_auc, self.svm_poly_test_fpr, self.svm_poly_test_tpr = self.plot_ROC_curve(self.valid_Y, self.poly_test_predicted_prob[:,1].reshape(-1,1), valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.svm_poly_train_auc, 
          'fpr': self.svm_poly_train_fpr, 'tpr': self.svm_poly_train_tpr},
@@ -47,11 +51,11 @@ def predict_svm_rbf(self):
     self.svm_rbf_fit()
     name = 'SVM RBF'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.rbf_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.rbf_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.rbf_test_predicted,valid_title)
     self.svm_rbf_train_auc,self.svm_rbf_train_fpr, self.svm_rbf_train_tpr = self.plot_ROC_curve(self.train_Y,self.rbf_train_predicted_prob[:,1],train_title)
-    self.svm_rbf_test_auc,self.svm_rbf_test_fpr, self.svm_rbf_test_tpr = self.plot_ROC_curve(self.test_Y,self.rbf_test_predicted_prob[:,1],test_title)
+    self.svm_rbf_test_auc,self.svm_rbf_test_fpr, self.svm_rbf_test_tpr = self.plot_ROC_curve(self.valid_Y,self.rbf_test_predicted_prob[:,1],valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.svm_rbf_train_auc, 
          'fpr': self.svm_rbf_train_fpr, 'tpr': self.svm_rbf_train_tpr},
@@ -68,11 +72,11 @@ def predict_decision_tree(self):
     self.decision_tree_fit()
     name = 'Decision Tree'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.decision_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.decision_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.decision_test_predicted,valid_title)
     self.decision_tree_train_auc, self.decision_tree_train_fpr, self.decision_tree_train_tpr = self.plot_ROC_curve(self.train_Y,self.decision_train_predicted_prob[:,1],train_title)
-    self.decision_tree_test_auc, self.decision_tree_test_fpr, self.decision_tree_test_tpr = self.plot_ROC_curve(self.test_Y,self.decision_test_predicted_prob[:,1],test_title)
+    self.decision_tree_test_auc, self.decision_tree_test_fpr, self.decision_tree_test_tpr = self.plot_ROC_curve(self.valid_Y,self.decision_test_predicted_prob[:,1],valid_title)
     print("預期特徵數量:", len(self.SELECTED_FEATURE_LIST))
     print("訓練資料特徵數:", self.train_X.shape[1])
 
@@ -96,11 +100,11 @@ def predict_random_forest(self):
     self.random_forest_fit()
     name = 'Random Forest'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.forest_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.forest_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.forest_test_predicted,valid_title)
     self.random_forest_train_auc, self.random_forest_train_fpr, self.random_forest_train_tpr = self.plot_ROC_curve(self.train_Y,self.forest_train_predicted_prob[:,1],train_title)
-    self.random_forest_test_auc, self.random_forest_test_fpr, self.random_forest_test_tpr = self.plot_ROC_curve(self.test_Y,self.forest_test_predicted_prob[:,1],test_title)
+    self.random_forest_test_auc, self.random_forest_test_fpr, self.random_forest_test_tpr = self.plot_ROC_curve(self.valid_Y,self.forest_test_predicted_prob[:,1],valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.random_forest_train_auc, 
          'fpr': self.random_forest_train_fpr, 'tpr': self.random_forest_train_tpr},
@@ -121,11 +125,11 @@ def predict_xgboost(self):
     self.xgboost_fit()
     name = 'XGBoost'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.xgboost_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.xgboost_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.xgboost_test_predicted,valid_title)
     self.xgboost_train_auc, self.xgboost_train_fpr, self.xgboost_train_tpr = self.plot_ROC_curve(self.train_Y,self.xgboost_train_predicted_prob[:,1],train_title)
-    self.xgboost_test_auc, self.xgboost_test_fpr, self.xgboost_test_tpr = self.plot_ROC_curve(self.test_Y,self.xgboost_test_predicted_prob[:,1],test_title)
+    self.xgboost_test_auc, self.xgboost_test_fpr, self.xgboost_test_tpr = self.plot_ROC_curve(self.valid_Y,self.xgboost_test_predicted_prob[:,1],valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.xgboost_train_auc, 
          'fpr': self.xgboost_train_fpr, 'tpr': self.xgboost_train_tpr},
@@ -144,11 +148,11 @@ def predict_adaboost(self):
     self.adaboost_fit()
     name = 'AdaBoost'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.adaboost_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.adaboost_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.adaboost_test_predicted,valid_title)
     self.adaboost_train_auc, self.adaboost_train_fpr, self.adaboost_train_tpr = self.plot_ROC_curve(self.train_Y,self.adaboost_ada_train_predicted_prob[:,1],train_title)
-    self.adaboost_test_auc, self.adaboost_test_fpr, self.adaboost_test_tpr = self.plot_ROC_curve(self.test_Y,self.adaboost_test_predicted_prob[:,1],test_title)
+    self.adaboost_test_auc, self.adaboost_test_fpr, self.adaboost_test_tpr = self.plot_ROC_curve(self.valid_Y,self.adaboost_test_predicted_prob[:,1],valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.adaboost_train_auc, 
          'fpr': self.adaboost_train_fpr, 'tpr': self.adaboost_train_tpr},
@@ -168,11 +172,11 @@ def predict_gradient_boost(self):
     self.gradient_boost_fit()
     name = 'Gradient Boost'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.grad_boost_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.grad_boost_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.grad_boost_test_predicted,valid_title)
     self.grad_boost_train_auc, self.grad_boost_train_fpr, self.grad_boost_train_tpr = self.plot_ROC_curve(self.train_Y,self.grad_boost_train_predicted_prob[:,1],train_title)
-    self.grad_boost_test_auc, self.grad_boost_test_fpr, self.grad_boost_test_tpr = self.plot_ROC_curve(self.test_Y,self.grad_boost_test_predicted_prob[:,1],test_title)
+    self.grad_boost_test_auc, self.grad_boost_test_fpr, self.grad_boost_test_tpr = self.plot_ROC_curve(self.valid_Y,self.grad_boost_test_predicted_prob[:,1],valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.grad_boost_train_auc, 
          'fpr': self.grad_boost_train_fpr, 'tpr': self.grad_boost_train_tpr},
@@ -199,11 +203,11 @@ def predict_dcnn(self):
     self.dcnn_fit()
     name = 'DCNN'
     train_title = f'{name} Trian'
-    test_title = f'{name} Test'
+    valid_title = f'{name} Test'
     self.confusion_matrix(self.train_Y,self.dcnn_train_predicted,train_title)
-    self.confusion_matrix(self.test_Y,self.dcnn_test_predicted,test_title)
+    self.confusion_matrix(self.valid_Y,self.dcnn_test_predicted,valid_title)
     self.dcnn_train_auc, self.dcnn_train_fpr, self.dcnn_train_tpr = self.plot_ROC_curve(self.train_Y,self.forest_train_predicted_prob[:,1],train_title)
-    self.dcnn_test_auc, self.dcnn_test_fpr, self.dcnn_test_tpr = self.plot_ROC_curve(self.test_Y,self.forest_test_predicted_prob[:,1],test_title)
+    self.dcnn_test_auc, self.dcnn_test_fpr, self.dcnn_test_tpr = self.plot_ROC_curve(self.valid_Y,self.forest_test_predicted_prob[:,1],valid_title)
     roc_curve_result_df = pd.DataFrame([
         {'model': name, 'dataset': 'train', 'auc': self.dcnn_train_auc, 
          'fpr': self.dcnn_train_fpr, 'tpr': self.dcnn_train_tpr},

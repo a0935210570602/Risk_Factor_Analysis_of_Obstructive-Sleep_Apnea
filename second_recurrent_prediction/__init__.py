@@ -34,14 +34,15 @@ class SecondStrokePrediction:
         self.data_df = pd.DataFrame
         self.train_X = pd.DataFrame
         self.train_Y = pd.DataFrame
-        self.test_X = pd.DataFrame
-        self.test_Y = pd.DataFrame
+        self.valid_X = pd.DataFrame
+        self.valid_Y = pd.DataFrame
         self.data_X = pd.DataFrame
         self.data_Y = pd.DataFrame
         self.train_result_df = pd.DataFrame(columns=self.RESULT_DF_COLUMN)
         self.test_result_df = pd.DataFrame(columns=self.RESULT_DF_COLUMN)
         self.roc_curve_result_df = pd.DataFrame(columns=self.ROC_CURVE_RESULT_COLUMN)
         self.ten_fold_avg_std_df = pd.DataFrame
+        self.standardization_or_not = False
 
     from ._predict import predict_svm_linear
     from ._predict import predict_svm_poly
@@ -53,10 +54,14 @@ class SecondStrokePrediction:
     from ._predict import predict_gradient_boost
     from ._predict import predict_dcnn
     from ._predict import show_all_result
+    from ._predict import set_prediction_model
     from ._data_processing import load_data
+    from ._data_processing import apply_standardization
     from ._data_processing import set_downsampling_rate
-    from ._data_processing import standardize_data
+    from ._data_processing import set_smote_method
+    # from ._data_processing import standardize_data
     from ._data_processing import cross_validation
+    from ._data_processing import prepare_tenfold_data
     from ._data_processing import display_total_result_train
     from ._data_processing import display_total_result_test
     from ._data_processing import display_total_ten_fold_result
