@@ -1,18 +1,10 @@
 from second_recurrent_prediction import SecondStrokePrediction
 
 file_paths = [
-    'raw_data/age_below_65.csv',
-    # 'raw_data/age_below_65_N1_with_stroke.csv',
-    # 'raw_data/age_below_65_N2_with_stroke.csv',
-    # 'raw_data/age_below_65_N3_with_stroke.csv',
-    # 'raw_data/age_below_65_N4_with_stroke.csv',
-    # 'raw_data/age_below_65_N5_with_stroke.csv',
-    # 'raw_data/age_below_65_no_age.csv',
-    # 'raw_data/age_below_65_91_samples.csv',
-    # 'raw_data/age_between_65_80.csv',
-    # 'raw_data/old_data.csv',
-    # 'raw_data/old_data_N1.csv',
-    # 'raw_data/age_over_80.csv',
+    'raw_data/age_below_66.csv',
+    'raw_data/age_between_66_73_samples.csv',
+    'raw_data/age_over_73.csv',
+
     # 'raw_data/female_data.csv',
     # 'raw_data/male_data.csv',
 ]
