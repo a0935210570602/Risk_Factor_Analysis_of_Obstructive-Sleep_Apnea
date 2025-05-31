@@ -11,6 +11,10 @@ def apply_standardization(self):
 
 def set_smote_method(self, smote_method):
     self.smote_method = smote_method
+
+def smote_method(self):
+    self.smote_method(self)
+
 def set_downsampling_rate(self, rate):
     self.data_config["down_sampling_rate"] = rate
 
@@ -139,23 +143,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score
 import pandas as pd
 
-def cross_validation(self):
-    results = []  # 儲存每 fold 的結果
-
-    for fold_id, (train_idx, val_idx) in enumerate(self.fold_indices):
-        print(f"🔁 Fold {fold_id + 1}/10")
-
-        # 抓出資料
-        self.train_X= self.X.iloc[train_idx]
-        self.train_Y = self.y.iloc[train_idx]
-        self.valid_X= self.X.iloc[val_idx]
-        self.valid_Y = self.y.iloc[val_idx]
-
-        # 標準化連續特徵
-        if self.apply_standardization:
-            scaler = StandardScaler()
-            self.X_train_scaled = scaler.fit_transform(self.train_X[self.continuous_features])
-            self.X_val_scaled = scaler.transform(self.valid_X[self.continuous_features])
+def standardize(self):
+    if self.standardization_or_not:
+        scaler = StandardScaler()
+        self.X_train_scaled = scaler.fit_transform(self.train_X[self.continuous_features])
+        self.X_val_scaled = scaler.transform(self.valid_X[self.continuous_features])
 
         # 合併類別特徵
         self.train_X= pd.concat([
@@ -166,6 +158,23 @@ def cross_validation(self):
             pd.DataFrame(self.X_val_scaled, columns=self.continuous_features, index=self.valid_X.index),
             self.valid_X[self.categorical_features]
         ], axis=1)
+        
+def cross_validation(self):
+    results = []  # 儲存每 fold 的結果
+
+    for fold_id, (train_idx, val_idx) in enumerate(self.fold_indices):
+        print(f"🔁 Fold {fold_id + 1}/10")
+
+        # 抓出資料
+        self.train_X = self.X.iloc[train_idx]
+        self.train_Y = self.y.iloc[train_idx]
+        self.valid_X= self.X.iloc[val_idx]
+        self.valid_Y = self.y.iloc[val_idx]
+        # 🔍 列印資料筆數
+        print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
+        
+        smote_method(self)
+        standardize(self)
 
         # 訓練與預測
         self.prediction_method(self)

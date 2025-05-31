@@ -10,13 +10,7 @@ file_paths = [
 ]
 # 設定 SMOTE 方法，這邊假設方法名稱與類別內定義一致
 smote_methods = [
-    'smote_borderline',
-    # 'smote_standard',
-    # 'smote_svm',
-    # 'smote_adasyn',
-    # 'smote_smotenc',
-    
-    # SecondStrokePrediction.smote_borderline,
+    SecondStrokePrediction.smote_borderline,
     # SecondStrokePrediction.smote_standard,
     # SecondStrokePrediction.smote_svm,
     # SecondStrokePrediction.smote_adasyn,

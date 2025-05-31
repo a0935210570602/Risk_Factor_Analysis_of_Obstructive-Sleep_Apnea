@@ -17,19 +17,19 @@ def single_experiment(args):
     (file_path, smote_method,
      feature_selection_method, prediction_method) = args
 
-    print(f"🚀 Running: {file_path}, smote={smote_method}, "
+    print(f"🚀 Running: {file_path}, smote={smote_method.__name__}, "
           f"fs={feature_selection_method.__name__}, pred={prediction_method.__name__}")
 
     try:
         model_prediction = SecondStrokePrediction(file_path)
         model_prediction.load_data()
         model_prediction.prepare_tenfold_data()
+        
         model_prediction.apply_standardization()
         model_prediction.set_smote_method(smote_method)
-
-        # smote_method(model_prediction)
-        # feature_selection_method(model_prediction)
         model_prediction.set_prediction_model(prediction_method)
+
+        # feature_selection_method(model_prediction)
         model_prediction.cross_validation()
     finally:
         model_prediction.clear_data_and_model()
