@@ -64,64 +64,17 @@ def clear_data_and_model(self):
     for _ in range(3):
         gc.collect()
 
-# TESTED
-# def load_data(self):
-#     # 逐一取出各個變數
-#     data_path = self.data_config["path"]
-#     train_size = self.data_config["train_size"]
-#     random_state = self.data_config.get("random_state", 42)
-    
-#     self.data_df = pd.read_csv(data_path)
-
-#     # Split data to Training set & Testing set
-#     stroke_df = self.data_df[self.data_df["Second_Stroke"] == 1]
-#     normal_df = self.data_df[self.data_df["Second_Stroke"] == 0]
-
-#     # down_sampling_rate = self.data_config.get("down_sampling_rate", 1.0)
-#     # if down_sampling_rate < 1.0:
-#     #     normal_df = normal_df.sample(frac=down_sampling_rate, random_state=random_state)
-
-#     self.normal_train_df, self.normal_test_df = model_selection.train_test_split(
-#             normal_df, train_size=train_size, random_state=random_state, stratify=normal_df["Second_Stroke"])
-#     self.stroke_train_df, self.stroke_test_df = model_selection.train_test_split(
-#             stroke_df, train_size=train_size, random_state=random_state, stratify=stroke_df["Second_Stroke"])
-
-
-
-#     train_df = pd.concat([self.stroke_train_df, self.normal_train_df], axis = 0)
-#     test_df = pd.concat([self.stroke_test_df, self.normal_test_df], axis = 0)
-
-#     # 將資料隨機打亂並重設索引
-#     train_df = train_df.sample(frac=1, random_state=random_state).reset_index(drop=True)
-#     test_df = test_df.sample(frac=1, random_state=random_state).reset_index(drop=True)
-    
-#     # Select features of training & testing data
-#     self.train_X = train_df[self.SELECTED_FEATURE_LIST]
-#     self.train_Y = train_df[self.LABEL_NAME].values.ravel()
-    
-#     self.valid_X = test_df[self.SELECTED_FEATURE_LIST]
-#     self.valid_Y = test_df[self.LABEL_NAME].values.ravel()
-
-#     self.data_X = self.data_df[self.SELECTED_FEATURE_LIST]
-#     self.data_Y = self.data_df[self.LABEL_NAME].values.ravel()
-#     # self.data_X = self.train_X.append(self.valid_X, ignore_index=True)
-#     # self.data_Y = self.train_Y.tolist() + self.valid_Y.tolist()
-
-#     # 印出原始標籤分布
-#     print("原始資料標籤分布(train)：")
-#     print(pd.Series(self.train_Y).value_counts())
-#     print("原始資料標籤分布(test)：")
-#     print(pd.Series(self.valid_Y).value_counts())
-
 def load_data(self):
     data_path = self.data_config["path"]
 
     self.data_df = pd.read_csv(data_path)
+    all_columns = self.data_df.columns
 
-    self.continuous_features = ['age', 'HLOS', 'NIHSS', 'LDL ', 'cholesterol', 'TG', 'Cre', 'SGPT', 'HbA1c']
-    self.categorical_features = ['sex', 'tPA(0/1)', 'EVT(0/1)', 'HTN(0/1)', 'DM(0/1)', 
-                                 'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)', 'MRS']
-
+    self.continuous_features = [col for col in ['age', 'HLOS', 'NIHSS', 'LDL ', 'cholesterol', 'TG', 'Cre', 'SGPT', 'HbA1c']
+                                if col in all_columns]
+    self.categorical_features = [col for col in ['sex', 'tPA(0/1)', 'EVT(0/1)', 'HTN(0/1)', 'DM(0/1)', 
+                                                 'Dyslipidemia(0/1)', 'Af(0/1)', 'smoking(Y/N/Q)', 'MRS']
+                                 if col in all_columns]
     # 合併 X 與 y
     self.data_X = self.data_df[self.continuous_features + self.categorical_features]
     self.data_Y = self.data_df["Second_Stroke"]
@@ -146,7 +99,7 @@ def prepare_tenfold_data(self):
     for train_index, val_index in skf.split(combined_df, y):
         self.fold_indices.append((train_index, val_index))
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.metrics import roc_auc_score
 import pandas as pd
 
@@ -182,6 +135,7 @@ def standardize(self):
 
     # 6. 執行標準化 (只對存在的 continuous 欄位做 fit/transform)
     scaler = StandardScaler()
+    # scaler = MinMaxScaler()
     try:
         # fit_transform train 的現有 continuous 欄位
         X_train_cont_scaled = scaler.fit_transform(self.train_X[existing_cont_train])
@@ -232,7 +186,7 @@ def dowmsample(self):
     y_neg = self.train_Y[self.train_Y == 0]
 
     # 計算要保留多少負樣本數量
-    target_neg_count = int(len(y_pos) * 1.5)
+    target_neg_count = int(len(y_pos) * 5)
 
     # 隨機抽樣負樣本
     X_neg_sampled = X_neg.sample(n=target_neg_count, random_state=42)
@@ -264,8 +218,8 @@ def cross_validation(self):
         print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
         self.fold = fold_id + 1  # 設定當前 fold 編號
         standardize(self)
-        smote_method(self)
         dowmsample(self)
+        smote_method(self)
         feature_selection_method(self)
 
         # 訓練與預測

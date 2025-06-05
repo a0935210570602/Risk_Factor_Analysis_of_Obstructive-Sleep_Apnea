@@ -33,7 +33,7 @@ def smote_smotenc(self):
     print("原始資料標籤分布：")
     print(pd.Series(self.train_Y).value_counts())
     positive_count = (self.train_Y == 1).sum()
-    target_count = positive_count*2 
+    target_count = positive_count*3
     smotenc = SMOTENC(
         sampling_strategy={1: target_count},
         categorical_features=categorical_features,
@@ -72,7 +72,7 @@ def smote_standard(self):
     print("原始資料標籤分布：")
     print(pd.Series(self.train_Y).value_counts())
     positive_count = (self.train_Y == 1).sum()
-    target_count = positive_count*2 
+    target_count = positive_count*3
     smote = SMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = smote.fit_resample(self.train_X, self.train_Y)
 
@@ -98,7 +98,7 @@ def smote_borderline(self):
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
     positive_count = (self.train_Y == 1).sum()
-    target_count = positive_count*2 
+    target_count = positive_count*3
     borderline_smote = BorderlineSMOTE(random_state=random_state, k_neighbors=k_neighbors, kind=kind,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = borderline_smote.fit_resample(self.train_X, self.train_Y)
 
@@ -117,7 +117,7 @@ def smote_svm(self):
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
     positive_count = (self.train_Y == 1).sum()
-    target_count = positive_count*2 
+    target_count = positive_count*3
     svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = svm_smote.fit_resample(self.train_X, self.train_Y)
     self.balance_config["sample amount"] = {
@@ -132,7 +132,7 @@ def smote_adasyn(self):
     random_state = self.balance_config.get("random_state", 42)
     n_neighbors = self.balance_config.get("neighbors", 5)
     positive_count = (self.train_Y == 1).sum()
-    target_count = positive_count*2 
+    target_count = positive_count*3
     adasyn = ADASYN(random_state=random_state, n_neighbors=n_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y =  adasyn.fit_resample(self.train_X, self.train_Y)
     self.balance_config["sample amount"] = {

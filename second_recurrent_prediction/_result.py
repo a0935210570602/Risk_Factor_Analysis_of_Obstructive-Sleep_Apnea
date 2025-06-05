@@ -11,12 +11,23 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
     f1_score_value = round(metrics.f1_score(true_y, pred_y), 2)
     auc_curve = round(train_auc, 2)
 
+    # 👉 計算 Specificity（TN / (TN + FP)）
+    cm = metrics.confusion_matrix(true_y, pred_y)
+    if cm.shape == (2, 2):
+        tn, fp, fn, tp = cm.ravel()
+        specificity = round(tn / (tn + fp), 2) if (tn + fp) > 0 else 0
+    else:
+        tn = fp = fn = tp = specificity = 0
+
+    confusion_str = f"[{tp}, {fp}]\n[{fn}, {tn}]"
     df = pd.DataFrame({
         'Model name': [name],
         'Fold': [self.fold],
         'dataset': [label],
         'accuracy': [accuracy],
+        'specificity': [specificity],
         'precision': [precision],
+        'confusion_matrix': [confusion_str],
         'recall': [recall],
         'f1-score': [f1_score_value],
         'auc': [auc_curve],

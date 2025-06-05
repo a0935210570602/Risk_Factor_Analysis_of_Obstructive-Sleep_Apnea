@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.utils import compute_class_weight
 from xgboost import XGBClassifier
 from sklearn import svm
 from sklearn.cluster import KMeans
@@ -10,7 +11,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-
+from sklearn.metrics import make_scorer, recall_score
 
 import csv
 from sklearn.model_selection import train_test_split
@@ -69,7 +70,7 @@ def svm_linear_fit(self):
     max_iter: 最大迭代次數, 預設1000。
     '''
     # 建立 linearSvc 模型
-    self.linear_svc_model = svm.SVC(C=0.5, max_iter=3000,kernel='linear',probability=True)
+    self.linear_svc_model = svm.SVC(C=0.5, max_iter=3000,kernel='linear',probability=True,)
     # 使用訓練資料訓練模型
     self.linear_svc_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
@@ -187,8 +188,20 @@ def svm_poly_fit(self):
     self.poly_test_predicted_prob = self.poly_svc_model.predict_proba(self.valid_X)
 
 def svm_rbf_fit(self):
-    self.rbf_svc_model = svm.SVC(C=0.5, max_iter=3000,kernel='rbf',probability=True)
-    # 使用訓練資料訓練模型
+    classes = np.unique(self.train_Y)
+    weights = compute_class_weight(class_weight='balanced', classes=classes, y=self.train_Y)
+    class_weight_dict = dict(zip(classes, weights))
+    print("使用的 class_weight:", class_weight_dict)
+
+    # 加入 class_weight 參數
+    self.rbf_svc_model = svm.SVC(
+        C=0.5,
+        max_iter=3000,
+        kernel='rbf',
+        probability=True,
+        class_weight='balanced'  # 或 class_weight='balanced'
+    )
+    
     self.rbf_svc_model.fit(self.train_X, self.train_Y)
     # 使用訓練資料預測分類
     self.rbf_train_predicted = self.rbf_svc_model.predict(self.train_X)
@@ -203,6 +216,7 @@ def svm_rbf_fit(self):
     print('========================')
 
 def decision_tree_fit(self):
+    from sklearn.metrics import make_scorer, recall_score, precision_score, f1_score
     """
     criterion: 亂度的評估標準 gini/entropy。預設為gini。
 
@@ -216,20 +230,37 @@ def decision_tree_fit(self):
 
     min_samples_leaf: 分完至少有多少資料才能分
     """
+    recall_scorer = make_scorer(recall_score, pos_label=1)
+
     param_grid = {'max_depth': [3, 5, 7, 10, None]}
-    grid_search = GridSearchCV(DecisionTreeClassifier(criterion='entropy', random_state=42), param_grid, cv=5)
+    grid_search = GridSearchCV(DecisionTreeClassifier(criterion='entropy', random_state=42), param_grid, cv=5,scoring=recall_scorer)
     grid_search.fit(self.train_X, self.train_Y)
 
     print("最佳 max_depth:", grid_search.best_params_['max_depth'])
     self.decision_tree_model = grid_search.best_estimator_
     # 使用訓練資料訓練模型
     self.decision_tree_model.fit(self.train_X, self.train_Y)
+    
     # 使用訓練資料預測分類
     self.decision_train_predicted = self.decision_tree_model.predict(self.train_X)
     self.decision_test_predicted = self.decision_tree_model.predict(self.valid_X)
 
     self.decision_train_predicted_prob = self.decision_tree_model.predict_proba(self.train_X)
     self.decision_test_predicted_prob = self.decision_tree_model.predict_proba(self.valid_X)
+
+    # 🧪 使用自訂閾值分類
+    threshold = 0.3  # ⬅️ 你可以調整這個值
+    test_prob = self.decision_test_predicted_prob[:, 1]
+    test_pred_thresh = (test_prob >= threshold).astype(int)
+
+    # ✅ 額外指標報告
+    # precision = precision_score(self.valid_Y, test_pred_thresh)
+    # recall = recall_score(self.valid_Y, test_pred_thresh)
+    # f1 = f1_score(self.valid_Y, test_pred_thresh)
+    # for t in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+    #     pred = (test_prob >= t).astype(int)
+    #     f1 = f1_score(self.valid_Y, pred)
+    #     print(f"Threshold={t:.2f} → F1 Score={f1:.2f}")
 
     # 計算準確率
     print('訓練集: ',self.decision_tree_model.score(self.train_X,self.train_Y))
