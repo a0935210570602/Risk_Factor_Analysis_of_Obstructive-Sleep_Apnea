@@ -43,6 +43,7 @@ class SecondStrokePrediction:
         self.roc_curve_result_df = pd.DataFrame(columns=self.ROC_CURVE_RESULT_COLUMN)
         self.ten_fold_avg_std_df = pd.DataFrame
         self.standardization_or_not = False
+        self.group = 1
 
     from ._predict import predict_svm_linear
     from ._predict import predict_svm_poly

@@ -80,24 +80,45 @@ def load_data(self):
     self.data_Y = self.data_df["Second_Stroke"]
 
 def prepare_tenfold_data(self):
-    # 分成正負樣本
-    stroke_df = self.data_df[self.data_df["Second_Stroke"] == 1]
-    normal_df = self.data_df[self.data_df["Second_Stroke"] == 0]
+    from sklearn.model_selection import KFold
+    import numpy as np
+    import pandas as pd
 
-    random_state = self.data_config.get("random_state", 42)
+    # 將 stroke 與 normal 分開
+    stroke_df = self.data_df[self.data_df["Second_Stroke"] == 1].reset_index()
+    normal_df = self.data_df[self.data_df["Second_Stroke"] == 0].reset_index()
 
-    # 建立 StratifiedKFold 物件
-    skf = model_selection.StratifiedKFold(n_splits=10, shuffle=True, random_state=random_state)
+    # 記錄 stroke 在原始 data_df 中的 index
+    stroke_global_idx = stroke_df["index"].values
 
-    # 將正負樣本合併並建立標籤
-    combined_df = pd.concat([stroke_df, normal_df]).reset_index(drop=True)
-    y = combined_df["Second_Stroke"].values  # 用來做 stratification
+    # ABCDE   => A (A') (A'')BB''B''' 
+    # 12345999999
 
-    # 儲存每一 fold 的索引 (train, val)
-    self.fold_indices = []  # list of (train_idx, val_idx) tuples
+    # ABCDE   => A (A') (A'')BB''B''' 
+    # 13579999999
 
-    for train_index, val_index in skf.split(combined_df, y):
-        self.fold_indices.append((train_index, val_index))
+    # 10-fold 對 normal 資料進行切分
+    kf = KFold(n_splits=10, shuffle=True, random_state=self.data_config.get("random_state", 42))
+    self.fold_indices = []
+
+    for train_normal_idx, val_normal_idx in kf.split(normal_df):
+        # 從 normal_df 中選取 train/val
+        train_normal = normal_df.iloc[train_normal_idx]
+        val_normal = normal_df.iloc[val_normal_idx]
+
+        # 把 stroke 病人加到 train / val 中
+        train_idx = np.concatenate([
+            train_normal["index"].values,  # normal train 索引
+            stroke_global_idx              # 所有 stroke 索引
+        ])
+
+        val_idx = np.concatenate([
+            val_normal["index"].values,    # normal val 索引
+            stroke_global_idx              # 所有 stroke 索引
+        ])
+
+        self.fold_indices.append((train_idx, val_idx))
+
 
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.metrics import roc_auc_score
@@ -210,10 +231,10 @@ def cross_validation(self):
         print(f"🔁 Fold {fold_id + 1}/10")
 
         # 抓出資料
-        self.train_X = self.data_X.iloc[train_idx].copy()
-        self.train_Y = self.data_Y.iloc[train_idx].copy()
-        self.valid_X= self.data_X.iloc[val_idx].copy()
-        self.valid_Y = self.data_Y.iloc[val_idx].copy()
+        self.train_X = self.data_X.loc[train_idx].copy()
+        self.train_Y = self.data_Y.loc[train_idx].copy()
+        self.valid_X= self.data_X.loc[val_idx].copy()
+        self.valid_Y = self.data_Y.loc[val_idx].copy()
         # 🔍 列印資料筆數
         print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
         self.fold = fold_id + 1  # 設定當前 fold 編號

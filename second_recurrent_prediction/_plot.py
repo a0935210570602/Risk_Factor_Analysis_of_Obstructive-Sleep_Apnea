@@ -66,7 +66,7 @@ def plot_feature_importance_bar_chart(self, importances, file_name, img_title):
     indices = np.argsort(importances)[::-1]
 
     dir_path = os.path.join(self.PATH, 'feature_importances_image')
-    file_path = os.path.join(dir_path, f'{file_name}.png')
+    file_path = os.path.join(dir_path, f'{file_name}_{self.fold}.png')
     if not os.path.isdir(dir_path):  # 確認儲存檔案位置 若沒有的話 則新建檔案
         os.makedirs(dir_path)
     file_path = os.path.join(self.PATH, file_path)

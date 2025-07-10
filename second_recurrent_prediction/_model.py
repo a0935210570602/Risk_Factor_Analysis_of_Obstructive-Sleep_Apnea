@@ -284,9 +284,22 @@ def random_forest_fit(self):
 
     min_samples_leaf: 分完至少有多少資料才能分
     """
-    #建立隨機森林 model
-    self.forest_model = RandomForestClassifier(criterion = 'entropy', n_estimators = 200, max_depth=None, min_samples_leaf=5, )
-    forest_fit = self.forest_model.fit(self.train_X, self.train_Y)
+    from imblearn.ensemble import BalancedRandomForestClassifier
+
+    # 建立 Balanced Random Forest 模型
+    self.forest_model = BalancedRandomForestClassifier(
+        criterion='entropy',
+        n_estimators=200,
+        max_depth=None,
+        min_samples_leaf=5,
+        sampling_strategy='all',   # 預設 equal sampling，建議保留
+        replacement=True,          # 和 bootstrap 對應使用
+        bootstrap=False,           # 0.13 預設改為 False
+        random_state=42            # 可設為固定值以重現結果
+    )
+
+    # 訓練模型
+    self.forest_model.fit(self.train_X, self.train_Y)
 
     # 預測
     self.forest_train_predicted = self.forest_model.predict(self.train_X)
@@ -295,9 +308,10 @@ def random_forest_fit(self):
     self.forest_train_predicted_prob = self.forest_model.predict_proba(self.train_X)
     self.forest_test_predicted_prob = self.forest_model.predict_proba(self.valid_X)
 
-    # 預測成功的比例
-    print('訓練集: ',self.forest_model.score(self.train_X,self.train_Y))
-    print('測試集: ',self.forest_model.score(self.valid_X,self.valid_Y))
+    # 預測成功的比例 (accuracy)
+    print('訓練集: ', self.forest_model.score(self.train_X, self.train_Y))
+    print('測試集: ', self.forest_model.score(self.valid_X, self.valid_Y))
+
 
 def xgboost_fit(self):
     # 建立 XGBClassifier 模型
