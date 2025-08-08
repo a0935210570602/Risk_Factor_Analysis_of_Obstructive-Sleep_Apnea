@@ -1,6 +1,6 @@
 {
   "name": "My Stroke Notebook",
-  "image": "stroke_analysis:latest",
+  "image": "stroke_analysis",
   "extensions": [
     "ms-python.python",
     "ms-toolsai.jupyter"

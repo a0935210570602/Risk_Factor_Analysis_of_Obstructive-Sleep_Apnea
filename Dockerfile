@@ -1,14 +1,14 @@
-# 使用 Python 3.8 作為基礎
 FROM python:3.8-slim
 
-# 設定工作目錄
 WORKDIR /app
 
-# 複製本機所有檔案到容器中
-COPY . .
+# 先複製 requirements.txt，利用 layer cache 加速後續 build
+COPY requirements.txt .
 
 # 安裝 Python 套件
-RUN pip install --upgrade pip && pip install -r requirements.txt
-# RUN pip install --no-cache-dir --progress-bar=off -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-# CMD ["python", "run_experiments.py"]
+# 複製應用程式剩餘檔案
+COPY . .
+# RUN pip install --no-cache-dir --progress-bar=off -r requirements.txt
+CMD ["python", "main.py"]

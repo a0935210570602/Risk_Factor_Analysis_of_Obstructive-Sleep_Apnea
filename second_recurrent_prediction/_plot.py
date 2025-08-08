@@ -62,30 +62,150 @@ def plot_ROC_curve(self, true_y, pred_y, name):
 def plot_feature_importance_bar_chart(self, importances, file_name, img_title):
     # 获取特征名称
     feature_names = self.train_X.columns
+
     # 将特征重要性进行排序
     indices = np.argsort(importances)[::-1]
 
     dir_path = os.path.join(self.PATH, 'feature_importances_image')
-    file_path = os.path.join(dir_path, f'{file_name}.png')
+    file_path = os.path.join(dir_path, f'{file_name}_{self.fold}.png')
     if not os.path.isdir(dir_path):  # 確認儲存檔案位置 若沒有的話 則新建檔案
         os.makedirs(dir_path)
     file_path = os.path.join(self.PATH, file_path)
 
-    # 画出特征重要性图表
-    plt.figure(figsize=(10, 6))
-    bars = plt.bar(range(self.train_X.shape[1]), importances[indices], align="center")
-    plt.xticks(range(self.train_X.shape[1]), feature_names[indices], rotation=45)
-    plt.title(f"Feature Importance - {img_title}")
-    plt.xlabel("Feature")
-    plt.ylabel("Importance")
+   # **自動調整寬度：每個特徵給1單位寬度，至少10單位**
+    width = max(len(feature_names) * 1.1, 10)
+    plt.figure(figsize=(width, 6))
 
-    # 在每个条形上标示特征重要值数字
+    bars = plt.bar(range(len(feature_names)), importances[indices], align="center")
+    plt.xticks(range(len(feature_names)), feature_names[indices], rotation=60, ha='right', fontsize=12)
+    plt.title(f"Feature Importance - {img_title}", fontsize=16)
+    plt.xlabel("Feature", fontsize=14)
+    plt.ylabel("Importance", fontsize=14)
+
     for bar, importance in zip(bars, importances[indices]):
         yval = round(importance, 3)
-        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.02, yval, ha='center', va='bottom')
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01, yval, ha='center', va='bottom', fontsize=10)
 
     plt.tight_layout()
-    plt.savefig(file_path, bbox_inches='tight') #存檔
+    plt.savefig(file_path, bbox_inches='tight')
+    plt.show()
+
+
+def plot_feature_summary(self, file_name):
+    import os
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    dir_path = os.path.join(self.PATH, 'feature_importances_image')
+    file_path = os.path.join(dir_path, f'{file_name}.png')
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
+    file_path = os.path.join(self.PATH, file_path)
+
+    # 1. 計算每個特徵的 importance 平均值
+    features, means = [], []
+    for feature, values in self.feature_importance_dict.items():
+        mean_val = np.mean(values) if len(values) > 0 else 0
+        features.append(feature)
+        means.append(mean_val)
+
+    # 2. 依照平均值大小排序
+    sorted_indices = np.argsort(means)[::-1]
+    sorted_features = [features[i] for i in sorted_indices]
+    sorted_means = [means[i] for i in sorted_indices]
+
+    # 3. 繪圖 (不含標準差)
+    height = max(len(sorted_features) * 0.5, 6)
+    plt.figure(figsize=(12, height))
+    plt.barh(
+        range(len(sorted_features)),
+        sorted_means,
+        align='center',
+        color='#1976D2',
+        edgecolor='white',
+        linewidth=2,
+        alpha=0.85
+    )
+
+    plt.yticks(range(len(sorted_features)), sorted_features, fontsize=12)
+    plt.xlabel('Mean Importance', fontsize=15, fontweight='bold')
+    plt.ylabel('Feature', fontsize=15, fontweight='bold')
+    plt.title('Feature Importance (mean) across folds', fontsize=18, fontweight='bold')
+    plt.gca().invert_yaxis()
+    plt.grid(axis='x', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+
+    # 去除右、上邊框
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
+    # 在每個 bar 尾端顯示平均值
+    for i, mean in enumerate(sorted_means):
+        plt.text(mean + 0.01, i, f'{mean:.3f}',
+                 va='center', fontsize=12, fontweight='bold', color='#1976D2')
+
+    plt.savefig(file_path, bbox_inches='tight', dpi=160)
+    plt.show()
+
+def plot_feature_summary_top_five(self, file_name): 
+    import os
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    dir_path = os.path.join(self.PATH, 'feature_importances_image')
+    file_path = os.path.join(dir_path, f'{file_name}.png')
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
+    file_path = os.path.join(self.PATH, file_path)
+
+    # 計算平均值和標準差
+    features, means, stds = [], [], []
+    for feature, values in self.feature_importance_dict.items():
+        mean_val = np.mean(values) if len(values) > 0 else 0
+        std_val = np.std(values) if len(values) > 0 else 0
+        features.append(feature)
+        means.append(mean_val)
+        stds.append(std_val)
+
+    # 排序
+    sorted_indices = np.argsort(means)[::-1]
+    sorted_features = [features[i] for i in sorted_indices][:5]
+    sorted_means = [means[i] for i in sorted_indices][:5]
+    sorted_stds = [stds[i] for i in sorted_indices][:5]
+
+    # 繪圖（只有前五名）
+    height = max(len(sorted_features) * 0.8, 4)  # 讓五條圖不擠
+    plt.figure(figsize=(12, height))
+    plt.barh(
+        range(len(sorted_features)),
+        sorted_means,
+        align='center',
+        color='#1976D2',
+        edgecolor='white',
+        linewidth=2,
+        alpha=0.85
+    )
+
+    plt.yticks(range(len(sorted_features)), sorted_features, fontsize=12)
+    plt.xlabel('Mean Importance', fontsize=15, fontweight='bold')
+    plt.ylabel('Feature', fontsize=15, fontweight='bold')
+    plt.title('Feature Importance (mean) across folds', fontsize=18, fontweight='bold')
+    plt.gca().invert_yaxis()
+    plt.grid(axis='x', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+
+    # 去除右、上邊框
+    ax = plt.gca()
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+
+    # 在每個 bar 尾端顯示平均值
+    for i, mean in enumerate(sorted_means):
+        plt.text(mean + 0.01, i, f'{mean:.3f}',
+                 va='center', fontsize=12, fontweight='bold', color='#1976D2')
+
+    plt.savefig(file_path, bbox_inches='tight', dpi=160)
     plt.show()
 
 def plot_tree_graph(self, is_forest = False):

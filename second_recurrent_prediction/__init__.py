@@ -13,7 +13,7 @@ class SecondStrokePrediction:
         'f1-score_mean', 'f1-score_std', 'auc_mean', 'auc_std','feature','balance_config','feature_selection_config']
     ROC_CURVE_RESULT_COLUMN = ['model', 'dataset', 'auc', 'fpr', 'tpr']
     RANDOM_SEED = 42
-    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "balance": "balance"}
+    data_config = { "path": None, "train_size": 0.8, "random_state": 42, "down_sampling_rate":1}
     balance_config = {"name": None, "sample amount": None, "random_state": 42, "neighbors": 5}
     feature_selection_config = {
         "name": None,
@@ -34,14 +34,18 @@ class SecondStrokePrediction:
         self.data_df = pd.DataFrame
         self.train_X = pd.DataFrame
         self.train_Y = pd.DataFrame
-        self.test_X = pd.DataFrame
-        self.test_Y = pd.DataFrame
+        self.valid_X = pd.DataFrame
+        self.valid_Y = pd.DataFrame
         self.data_X = pd.DataFrame
         self.data_Y = pd.DataFrame
         self.train_result_df = pd.DataFrame(columns=self.RESULT_DF_COLUMN)
         self.test_result_df = pd.DataFrame(columns=self.RESULT_DF_COLUMN)
         self.roc_curve_result_df = pd.DataFrame(columns=self.ROC_CURVE_RESULT_COLUMN)
         self.ten_fold_avg_std_df = pd.DataFrame
+        self.standardization_or_not = False
+        self.group = 1
+        # 初始化一個 dict，dict 中每個元素是{'feature': 特徵名稱, 'importance': 0}
+        self.feature_importance_dict = {f: [] for f in self.SELECTED_FEATURE_LIST}
 
     from ._predict import predict_svm_linear
     from ._predict import predict_svm_poly
@@ -51,13 +55,22 @@ class SecondStrokePrediction:
     from ._predict import predict_xgboost
     from ._predict import predict_adaboost
     from ._predict import predict_gradient_boost
+    from ._predict import predict_dcnn
     from ._predict import show_all_result
+    from ._predict import set_prediction_model
     from ._data_processing import load_data
-    from ._data_processing import standardize_data
+    from ._data_processing import apply_standardization
+    from ._data_processing import set_downsampling_rate
+    from ._data_processing import set_smote_method
+    from ._data_processing import set_feature_selection_method
+    # from ._data_processing import standardize_data
     from ._data_processing import cross_validation
+    from ._data_processing import prepare_tenfold_data
     from ._data_processing import display_total_result_train
     from ._data_processing import display_total_result_test
     from ._data_processing import display_total_ten_fold_result
+    from ._data_processing import clear_data_and_model
+    from ._balance_data import smote_smotenc
     from ._balance_data import smote_standard
     from ._balance_data import smote_svm
     from ._balance_data import smote_borderline
@@ -74,6 +87,7 @@ class SecondStrokePrediction:
     from ._feature_select import l1_feature_selection
     from ._feature_analyze import pca
     from ._feature_analyze import tsne
+    from ._model import dcnn_fit
     from ._model import k_means_fit
     from ._model import svm_linear_fit
     from ._model import svm_poly_fit
@@ -89,4 +103,8 @@ class SecondStrokePrediction:
     from ._plot import plot_tree_graph
     from ._plot import plot_xgboost_feature_importance
     from ._plot import plot_total_ROC_curve
+    from ._plot import plot_feature_summary
+    from ._plot import plot_feature_summary_top_five
     from ._result import gen_result
+    from ._result import record_feature_importance
+    from ._result import clean_feature_importance
