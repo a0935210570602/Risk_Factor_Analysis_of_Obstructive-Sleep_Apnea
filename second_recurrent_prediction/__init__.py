@@ -44,6 +44,8 @@ class SecondStrokePrediction:
         self.ten_fold_avg_std_df = pd.DataFrame
         self.standardization_or_not = False
         self.group = 1
+        # 初始化一個 dict，dict 中每個元素是{'feature': 特徵名稱, 'importance': 0}
+        self.feature_importance_dict = {f: [] for f in self.SELECTED_FEATURE_LIST}
 
     from ._predict import predict_svm_linear
     from ._predict import predict_svm_poly
@@ -101,4 +103,8 @@ class SecondStrokePrediction:
     from ._plot import plot_tree_graph
     from ._plot import plot_xgboost_feature_importance
     from ._plot import plot_total_ROC_curve
+    from ._plot import plot_feature_summary
+    from ._plot import plot_feature_summary_top_five
     from ._result import gen_result
+    from ._result import record_feature_importance
+    from ._result import clean_feature_importance

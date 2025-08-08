@@ -38,13 +38,13 @@ def clear_data_and_model(self):
     self.data_Y = None
 
     # 強制刪除變數參考
-    del self.data_df
-    del self.train_X
-    del self.train_Y
-    del self.valid_X
-    del self.valid_Y
-    del self.data_X
-    del self.data_Y
+    # del self.data_df
+    # del self.train_X
+    # del self.train_Y
+    # del self.valid_X
+    # del self.valid_Y
+    # del self.data_X
+    # del self.data_Y
 
     # 模型物件釋放（若存在）
     for model_attr in [
@@ -91,24 +91,35 @@ def prepare_tenfold_data(self):
     # 記錄 stroke 在原始 data_df 中的 index
     stroke_global_idx = stroke_df["index"].values
 
+    # ABCDE   => A (A') (A'')BB''B''' 
+    # 12345999999
+
+    # ABCDE   => A (A') (A'')BB''B''' 
+    # 13579999999
+
+    # 切出validation
+    val_normal = normal_df.sample(n=13, random_state=42)
+    train_normal = normal_df.drop(val_normal.index) # 1400
+    val_stroke = stroke_df.sample(n=14, random_state=42)
+    train_stroke = stroke_df.drop(val_stroke.index) # 57
+
+    val_idx = np.concatenate([
+        val_normal["index"].values,    # normal val 索引
+        val_stroke["index"].values              # 所有 stroke 索引
+    ])
+
     # 10-fold 對 normal 資料進行切分
     kf = KFold(n_splits=10, shuffle=True, random_state=self.data_config.get("random_state", 42))
     self.fold_indices = []
 
-    for train_normal_idx, val_normal_idx in kf.split(normal_df):
+    for _, train_normal_idx in kf.split(train_normal["index"].values):
         # 從 normal_df 中選取 train/val
-        train_normal = normal_df.iloc[train_normal_idx]
-        val_normal = normal_df.iloc[val_normal_idx]
+        train_normal_fold = train_normal.iloc[train_normal_idx]
 
         # 把 stroke 病人加到 train / val 中
         train_idx = np.concatenate([
-            train_normal["index"].values,  # normal train 索引
-            stroke_global_idx              # 所有 stroke 索引
-        ])
-
-        val_idx = np.concatenate([
-            val_normal["index"].values,    # normal val 索引
-            stroke_global_idx              # 所有 stroke 索引
+            train_normal_fold["index"].values,  # normal train 索引
+            train_stroke["index"].values              # 所有 stroke 索引
         ])
 
         self.fold_indices.append((train_idx, val_idx))
@@ -233,7 +244,7 @@ def cross_validation(self):
         print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
         self.fold = fold_id + 1  # 設定當前 fold 編號
         standardize(self)
-        dowmsample(self)
+        # dowmsample(self)
         smote_method(self)
         feature_selection_method(self)
 

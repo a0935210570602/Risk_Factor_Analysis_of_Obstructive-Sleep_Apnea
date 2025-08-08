@@ -20,21 +20,21 @@ def single_experiment(args):
     print(f"🚀 Running: {file_path}, smote={smote_method.__name__}, "
           f"fs={feature_selection_method.__name__}, pred={prediction_method.__name__}")
 
-    try:
-        model_prediction = SecondStrokePrediction(file_path)
-        model_prediction.load_data()
-        model_prediction.prepare_tenfold_data()
+    # try:
+    model_prediction = SecondStrokePrediction(file_path)
+    model_prediction.load_data()
+    model_prediction.prepare_tenfold_data()
 
-        model_prediction.set_feature_selection_method(feature_selection_method)
-        model_prediction.apply_standardization()
-        model_prediction.set_smote_method(smote_method)
+    model_prediction.set_feature_selection_method(feature_selection_method)
+    model_prediction.apply_standardization()
+    model_prediction.set_smote_method(smote_method)
 
-        model_prediction.set_prediction_model(prediction_method)
-        # feature_selection_method(model_prediction)
-        model_prediction.cross_validation()
-    finally:
-        model_prediction.clear_data_and_model()
-        gc.collect()  # 每次子進程結束時釋放資源
+    model_prediction.set_prediction_model(prediction_method)
+    model_prediction.cross_validation()
+    # finally:
+        # model_prediction.clear_data_and_model()
+        # gc.collect()  # 每次子進程結束時釋放資源
+
 
 def run_experiments():
     all_params = []

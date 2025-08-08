@@ -180,7 +180,8 @@ def predict_gradient_boost(self):
     self.gen_result(self.grad_boost_test_predicted, name, self.grad_boost_test_auc, is_train=False)
 
     importance_list = self.grad_boost_model.feature_importances_
-    self.plot_feature_importance_bar_chart(importance_list, 'gradien_boost', name)
+    self.plot_feature_importance_bar_chart(importance_list, 'gradient_boost', name)
+    self.record_feature_importance(importance_list)
 
 def show_all_result(self):
     self.display_total_result_train()

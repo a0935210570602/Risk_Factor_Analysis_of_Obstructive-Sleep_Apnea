@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 from sklearn import metrics
 
@@ -73,8 +74,13 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
     # 儲存 CSV
     result_df.to_csv(file_path, index=False)
 
+
+
     # summary 也跟著用正確的 group_id
     if self.fold == 10:
+        self.plot_feature_summary('gradient_boost_feature_importance_summary')
+        self.plot_feature_summary_top_five('gradient_boost_feature_importance_summary_top_five')
+        # self.clean_feature_importance()
         all_results = pd.read_csv(file_path)
         recent_results = all_results[all_results["Group"] == group_id]  # 取本組
         metric_cols = ['accuracy', 'specificity', 'precision', 'recall', 'f1-score', 'auc']
@@ -103,3 +109,11 @@ def gen_result(self, pred_y, name, train_auc, is_train=True):
             header=not os.path.exists(summary_file_path),
             index=False
         )
+
+def record_feature_importance(self, importances):
+    feature_names = self.train_X.columns
+    for f, imp in zip(feature_names, importances):
+        self.feature_importance_dict[f].append(imp)
+
+def clean_feature_importance(self):
+    self.feature_importance_dict = {f: [] for f in self.SELECTED_FEATURE_LIST}

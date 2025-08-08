@@ -2,8 +2,10 @@ from second_recurrent_prediction import SecondStrokePrediction
 
 file_paths = [
     # 'raw_data/test.csv',
-    'raw_data/age_below_66.csv',
-    'raw_data/age_between_66_73.csv',
+    # 'raw_data/age_below_66.csv',
+    # 'raw_data/age_between_66_73.csv',
+    'raw_data/total.csv',
+    # 'raw_data/age_between_66_73.csv',
     # 'raw_data/age_over_73.csv',
 
     # 'raw_data/female_data.csv',
@@ -21,13 +23,14 @@ smote_methods = [
 
 # 設定特徵選擇方法，同樣假設方法名稱與類別內定義一致
 feature_selection_methods = [
-    SecondStrokePrediction.sfs_knn_feature_selection,
-    SecondStrokePrediction.sfs_linear_feature_selection,
-    SecondStrokePrediction.sfs_random_forest_feature_selection,
-    SecondStrokePrediction.sfs_xgboost_feature_selection,
-    SecondStrokePrediction.permutation_feature_selection,
-    SecondStrokePrediction.boruta_feature_selection,
-    SecondStrokePrediction.rfecv_feature_selection,
+
+    # SecondStrokePrediction.sfs_knn_feature_selection,
+    # SecondStrokePrediction.sfs_linear_feature_selection,
+    # SecondStrokePrediction.sfs_random_forest_feature_selection,
+    # SecondStrokePrediction.sfs_xgboost_feature_selection,
+    # SecondStrokePrediction.permutation_feature_selection,
+    # SecondStrokePrediction.boruta_feature_selection,
+    # SecondStrokePrediction.rfecv_feature_selection,
     SecondStrokePrediction.variance_threshold_selection,
     SecondStrokePrediction.l1_feature_selection,
 ]
