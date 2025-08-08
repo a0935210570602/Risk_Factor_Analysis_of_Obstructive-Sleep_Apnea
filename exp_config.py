@@ -2,7 +2,7 @@ from second_recurrent_prediction import SecondStrokePrediction
 
 file_paths = [
     # 'raw_data/test.csv',
-    'raw_data/age_below_66.csv',
+    'raw_data/total.csv',
     # 'raw_data/age_between_66_73.csv',
     # 'raw_data/age_over_73.csv',
 

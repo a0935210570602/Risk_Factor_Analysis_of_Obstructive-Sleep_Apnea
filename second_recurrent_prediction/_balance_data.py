@@ -116,9 +116,10 @@ def smote_svm(self):
     self.balance_config["name"] = "smote_svm"
     random_state = self.balance_config.get("random_state", 42)
     k_neighbors = self.balance_config.get("neighbors", 5)
-    positive_count = (self.train_Y == 1).sum()
-    target_count = positive_count*3
-    svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy={1: target_count})
+    # positive_count = (self.train_Y == 1).sum()
+    # target_count = positive_count
+    svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy=1.0)  # 少數類補到跟多數類一樣多
+    # svm_smote = SVMSMOTE(random_state=random_state, k_neighbors=k_neighbors,sampling_strategy={1: target_count})
     self.train_X, self.train_Y = svm_smote.fit_resample(self.train_X, self.train_Y)
     self.balance_config["sample amount"] = {
         "positive (1)": int((self.train_Y == 1).sum()),
