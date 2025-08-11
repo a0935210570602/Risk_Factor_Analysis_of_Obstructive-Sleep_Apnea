@@ -3,7 +3,7 @@ import gc
 import warnings
 import multiprocessing
 from exp_config import (smote_methods, feature_selection_methods,
-                        prediction_methods, file_paths)
+                        prediction_methods, file_paths, down_sampling_rates)
 from second_recurrent_prediction import SecondStrokePrediction
 from sklearn.exceptions import DataConversionWarning, ConvergenceWarning, UndefinedMetricWarning
 
@@ -15,10 +15,10 @@ warnings.filterwarnings("ignore", message="The least populated class in y has on
 def single_experiment(args):
     """每次在子進程要執行的程式。"""
     (file_path, smote_method,
-     feature_selection_method, prediction_method) = args
+     feature_selection_method, prediction_method, down_sampling_rate) = args
 
     print(f"🚀 Running: {file_path}, smote={smote_method.__name__}, "
-          f"fs={feature_selection_method.__name__}, pred={prediction_method.__name__}")
+          f"fs={feature_selection_method.__name__}, pred={prediction_method.__name__}, down_sampling_rate = {down_sampling_rate}")
 
     # try:
     model_prediction = SecondStrokePrediction(file_path)
@@ -30,6 +30,7 @@ def single_experiment(args):
     model_prediction.set_smote_method(smote_method)
 
     model_prediction.set_prediction_model(prediction_method)
+    model_prediction.set_downsampling_rate(down_sampling_rate)
     model_prediction.cross_validation()
     # finally:
         # model_prediction.clear_data_and_model()
@@ -40,17 +41,18 @@ def run_experiments():
     all_params = []
     for file_path in file_paths:
         for combo in itertools.product(
-            # down_sampling_rates,
             smote_methods,
             feature_selection_methods,
-            prediction_methods
+            prediction_methods,
+            down_sampling_rates
         ):
-            smote_method, feature_selection_method, prediction_method = combo
+            smote_method, feature_selection_method, prediction_method, down_sampling_rate = combo
             all_params.append((file_path,
-                            #    down_sampling_rate,
                                smote_method,
                                feature_selection_method,
-                               prediction_method))
+                               prediction_method,
+                               down_sampling_rate,
+                               ))
 
     for i, param in enumerate(all_params):
         print(f"🔥 Executing experiment {i+1}/{len(all_params)}")

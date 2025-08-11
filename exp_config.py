@@ -35,13 +35,14 @@ feature_selection_methods = [
 # 設定各預測模型方法
 prediction_methods = [
     # SecondStrokePrediction.predict_svm_linear,
-    # SecondStrokePrediction.predict_svm_poly,
+    SecondStrokePrediction.predict_svm_poly,
     # SecondStrokePrediction.predict_svm_rbf,
     # SecondStrokePrediction.predict_decision_tree,
     # SecondStrokePrediction.predict_random_forest,
     # SecondStrokePrediction.predict_adaboost,
-    SecondStrokePrediction.predict_gradient_boost,
+    # SecondStrokePrediction.predict_gradient_boost,
     # SecondStrokePrediction.predict_xgboost,
 ]
 
-# down_sampling_rates = [1]
+# down_sampling_rates = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3]
+down_sampling_rates = [0.5]
