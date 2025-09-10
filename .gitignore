@@ -21,3 +21,6 @@ record/
 .DS_Store
 
 raw_data/
+catboost_info/
+figs/
+result/

@@ -212,7 +212,8 @@ def dowmsample(self):
     y_neg = self.train_Y[self.train_Y == 0]
 
     # 計算要保留多少負樣本數量
-    target_neg_count = int(len(y_pos) * 5)
+    target_neg_count = int(len(y_neg) *self.data_config["down_sampling_rate"])
+    print("target_neg_count = {target_neg_count}")
 
     # 隨機抽樣負樣本
     X_neg_sampled = X_neg.sample(n=target_neg_count, random_state=42)
@@ -244,7 +245,7 @@ def cross_validation(self):
         print(f"📊 Fold {fold_id + 1} - Train: {len(self.train_X)} samples, Valid: {len(self.valid_X)} samples")
         self.fold = fold_id + 1  # 設定當前 fold 編號
         standardize(self)
-        # dowmsample(self)
+        dowmsample(self)
         smote_method(self)
         feature_selection_method(self)
 
