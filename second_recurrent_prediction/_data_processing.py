@@ -96,12 +96,28 @@ def prepare_tenfold_data(self):
 
     # ABCDE   => A (A') (A'')BB''B''' 
     # 13579999999
+    # 切出 validation
+    SEED = 42  # 或沿用你上面定義的 SEED
 
-    # 切出validation
-    val_normal = normal_df.sample(n=13, random_state=42)
-    train_normal = normal_df.drop(val_normal.index) # 1400
-    val_stroke = stroke_df.sample(n=14, random_state=42)
-    train_stroke = stroke_df.drop(val_stroke.index) # 57
+    # 1) 固定 stroke_df 的 1/5 做 validation（向下取整，至少 1 筆）
+    n_val_stroke = max(1, len(stroke_df) // 5)
+
+    # 2) 取樣 stroke 的 validation/train
+    val_stroke = stroke_df.sample(n=n_val_stroke, random_state=SEED)
+    train_stroke = stroke_df.drop(val_stroke.index)
+
+    # 3) normal 的 validation 要與 stroke 相同數量
+    n_val_normal = n_val_stroke
+    if len(normal_df) < n_val_normal:
+        raise ValueError(
+            f"normal_df 筆數不足：需要 {n_val_normal} 筆作為 validation，但只有 {len(normal_df)} 筆。"
+        )
+
+    val_normal = normal_df.sample(n=n_val_normal, random_state=SEED)
+    train_normal = normal_df.drop(val_normal.index)
+
+    print(f"val_stroke: {len(val_stroke)} | train_stroke: {len(train_stroke)}")
+    print(f"val_normal: {len(val_normal)} | train_normal: {len(train_normal)}")
 
     val_idx = np.concatenate([
         val_normal["index"].values,    # normal val 索引

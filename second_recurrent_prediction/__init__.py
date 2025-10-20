@@ -55,7 +55,6 @@ class SecondStrokePrediction:
     from ._predict import predict_xgboost
     from ._predict import predict_adaboost
     from ._predict import predict_gradient_boost
-    from ._predict import predict_dcnn
     from ._predict import show_all_result
     from ._predict import set_prediction_model
     from ._data_processing import load_data

@@ -6,10 +6,10 @@ summaries = []
 import random
 
 # 設定隨機種子，可以是一個數字或字串
-random.seed(42)
+random.seed(95)
 
 # 創建一個空列表來儲存隨機數
-seed_list = [42]
+seed_list = [95]
 
 # 循環五次，每次生成一個隨機數並加入列表中
 for _ in range(4):
